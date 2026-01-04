@@ -98,7 +98,7 @@ avg_cost = df_selected_draft["cost"].mean()
 # Dynamically scale width based on number of picks
 chart_width = max(900, len(df_selected_draft) * 30)
 
-# Bar chart (NOT stacked)
+# Bar chart (each Pokémon is a single bar)
 bars = alt.Chart(df_selected_draft).mark_bar().encode(
     x=alt.X(
         "draft_order:O",
@@ -109,8 +109,7 @@ bars = alt.Chart(df_selected_draft).mark_bar().encode(
     color=alt.Color(
         "drafted_by:N",
         title="Drafted By",
-        legend=alt.Legend(orient="right"),
-        stack=None  # 🔴 THIS PREVENTS STACKING
+        legend=alt.Legend(orient="right")
     ),
     tooltip=[
         alt.Tooltip("draft_order:O", title="Pick"),
