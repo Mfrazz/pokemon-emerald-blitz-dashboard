@@ -176,15 +176,5 @@ top3_chart = alt.Chart(df_top3).mark_bar().encode(
 
 st.altair_chart(top3_chart)
 
-draft_filter = st.selectbox("Select Draft", options=df_top3['draft_id'].unique())
-df_top3_filtered = df_top3[df_top3['draft_id'] == draft_filter]
 
-filtered_chart = alt.Chart(df_top3_filtered).mark_bar().encode(
-    x='pokemon:N',
-    y='cost:Q',
-    color='draft_id:N',
-    tooltip=['draft_id', 'pokemon', 'drafted_by', 'cost', 'draft_order']
-).properties(width=700)
-
-st.altair_chart(filtered_chart)
 
