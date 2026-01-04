@@ -50,21 +50,8 @@ color_scale = alt.Scale(
     range=['#9999FF', '#000099']  # light blue → dark blue
 )
 
-# --------------------
-# Create bar chart
-# --------------------
-avg_pokemon_chart = alt.Chart(df_avg_pokemon_filtered).mark_bar().encode(
-    x=alt.X('pokemon:N', sort=df_avg_pokemon_filtered['pokemon'].tolist()),
-    y='avg_cost:Q',
-    color=alt.Color('times_drafted:Q', scale=color_scale, legend=alt.Legend(title="Times Drafted")),
-    tooltip=['pokemon', 'avg_cost', 'times_drafted']
-).properties(width=1000)
-
-st.altair_chart(avg_pokemon_chart)
-
 st.header("Draft Pick Order – Vertical Bar Chart")
 
-# Load draft pick data
 df_draft_picks = pd.read_sql_query("""
     SELECT
         draft_id,
@@ -76,22 +63,23 @@ df_draft_picks = pd.read_sql_query("""
     ORDER BY draft_id, draft_order
 """, conn)
 
-# Draft selector
+
+# --- Step 2: Draft selector ---
 draft_ids = sorted(df_draft_picks["draft_id"].unique())
+selected_draft = st.selectbox("Select a Draft", draft_ids)
 
-selected_draft = st.selectbox(
-    "Select a Draft",
-    draft_ids
-)
+df_selected_draft = df_draft_picks[df_draft_picks["draft_id"] == selected_draft]
 
-df_selected_draft = df_draft_picks[
-    df_draft_picks["draft_id"] == selected_draft
-]
+st.write(f"Draft {selected_draft} data:")
+st.write(df_selected_draft)
 
-# Average cost for the draft
+# --- Step 3: Average cost ---
 avg_cost = df_selected_draft["cost"].mean()
+st.write(f"Average cost for draft {selected_draft}: {avg_cost}")
 
-# Vertical bar chart
+# --- Step 4: Vertical bar chart ---
+chart_width = max(900, len(df_selected_draft)*30)
+
 bars = alt.Chart(df_selected_draft).mark_bar().encode(
     x=alt.X(
         "draft_order:O",
@@ -116,7 +104,6 @@ bars = alt.Chart(df_selected_draft).mark_bar().encode(
     ]
 )
 
-# Average cost horizontal line
 avg_line = alt.Chart(pd.DataFrame({"avg_cost": [avg_cost]})).mark_rule(
     color="red",
     strokeDash=[6, 4],
@@ -125,9 +112,8 @@ avg_line = alt.Chart(pd.DataFrame({"avg_cost": [avg_cost]})).mark_rule(
     y="avg_cost:Q"
 )
 
-# Combine chart
 draft_order_chart = (bars + avg_line).properties(
-    width=max(900, len(df_selected_draft)*30),
+    width=chart_width,
     height=450,
     title=f"Draft {selected_draft} – Pokémon Draft Order"
 )
