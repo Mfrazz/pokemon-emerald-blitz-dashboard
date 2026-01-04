@@ -93,6 +93,7 @@ df = pd.read_sql_query("""
         draft_id,
         draft_order,
         pokemon,
+        drafted_by,
         cost
     FROM draft_pokemon_v2
     WHERE draft_id = ?
@@ -110,7 +111,7 @@ if df.empty:
 avg_cost = df["cost"].mean()
 
 # -----------------------------
-# Bar chart (ONE bar per pick, Egg-safe)
+# Bar chart (colored by drafter)
 # -----------------------------
 bars = alt.Chart(df).mark_bar().encode(
     x=alt.X(
@@ -121,9 +122,15 @@ bars = alt.Chart(df).mark_bar().encode(
         "cost:Q",
         title="Cost"
     ),
+    color=alt.Color(
+        "drafted_by:N",
+        title="Drafted By",
+        legend=alt.Legend(orient="right")
+    ),
     tooltip=[
         alt.Tooltip("draft_order:Q", title="Pick"),
         alt.Tooltip("pokemon:N", title="Pokémon"),
+        alt.Tooltip("drafted_by:N", title="Drafted By"),
         alt.Tooltip("cost:Q", title="Cost")
     ]
 )
