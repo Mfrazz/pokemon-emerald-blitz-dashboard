@@ -12,6 +12,8 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "PokemonDraftData.db")
 # Connect to SQLite database
 conn = sqlite3.connect(DB_PATH)
 
+st.title("Pokémon Emerald Blitz Draft Data")
+
 #NEW CHART AVERAGE COST FOR EACH POKEMON
 
 df_avg_pokemon = pd.read_sql_query("""
@@ -64,7 +66,7 @@ st.altair_chart(avg_pokemon_chart)
 # Load top 3 Pokémon per draft
 df_top3 = pd.read_sql_query("SELECT * FROM vw_top3_pokemon_per_draft;", conn)
 
-st.title("Pokémon Emerald Blitz Draft Data")
+
 st.header("Top 3 Most Expensive Pokémon per Draft")
 st.write("This chart shows the top 3 most expensive Pokémon for each draft.")
 
