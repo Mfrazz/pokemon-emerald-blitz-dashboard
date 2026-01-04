@@ -62,11 +62,7 @@ avg_pokemon_chart = alt.Chart(df_avg_pokemon_filtered).mark_bar().encode(
 
 st.altair_chart(avg_pokemon_chart)
 
-# --------------------
-# Draft Pick Order Visualization (Fixed)
-# --------------------
-
-st.header("Draft Pick Order – Full Draft View")
+st.header("Draft Pick Order – Vertical Bar Chart")
 
 # Load draft pick data
 df_draft_picks = pd.read_sql_query("""
@@ -92,20 +88,21 @@ df_selected_draft = df_draft_picks[
     df_draft_picks["draft_id"] == selected_draft
 ]
 
-# Calculate average cost for the selected draft
+# Average cost for the draft
 avg_cost = df_selected_draft["cost"].mean()
 
-# Dynamically scale width based on number of picks
-chart_width = max(900, len(df_selected_draft) * 30)
-
-# Bar chart (each Pokémon is a single bar)
+# Vertical bar chart
 bars = alt.Chart(df_selected_draft).mark_bar().encode(
     x=alt.X(
         "draft_order:O",
         title="Draft Order",
         sort=list(df_selected_draft["draft_order"])
     ),
-    y=alt.Y("cost:Q", title="Cost"),
+    y=alt.Y(
+        "cost:Q",
+        title="Cost",
+        scale=alt.Scale(domain=[0, df_selected_draft["cost"].max()*1.1])
+    ),
     color=alt.Color(
         "drafted_by:N",
         title="Drafted By",
@@ -119,21 +116,20 @@ bars = alt.Chart(df_selected_draft).mark_bar().encode(
     ]
 )
 
-# Average cost line
-avg_line = alt.Chart(
-    pd.DataFrame({"avg_cost": [avg_cost]})
-).mark_rule(
+# Average cost horizontal line
+avg_line = alt.Chart(pd.DataFrame({"avg_cost": [avg_cost]})).mark_rule(
     color="red",
-    strokeDash=[6, 4]
+    strokeDash=[6, 4],
+    size=2
 ).encode(
     y="avg_cost:Q"
 )
 
 # Combine chart
 draft_order_chart = (bars + avg_line).properties(
-    width=chart_width,
+    width=max(900, len(df_selected_draft)*30),
     height=450,
-    title=f"Draft {selected_draft} – Pokémon Draft Order (Avg Cost: {round(avg_cost, 1)})"
+    title=f"Draft {selected_draft} – Pokémon Draft Order"
 )
 
 st.altair_chart(draft_order_chart, use_container_width=True)
