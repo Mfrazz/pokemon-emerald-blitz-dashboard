@@ -51,6 +51,18 @@ color_scale = alt.Scale(
 )
 
 # --------------------
+# Create bar chart
+# --------------------
+avg_pokemon_chart = alt.Chart(df_avg_pokemon_filtered).mark_bar().encode(
+    x=alt.X('pokemon:N', sort=df_avg_pokemon_filtered['pokemon'].tolist()),
+    y='avg_cost:Q',
+    color=alt.Color('times_drafted:Q', scale=color_scale, legend=alt.Legend(title="Times Drafted")),
+    tooltip=['pokemon', 'avg_cost', 'times_drafted']
+).properties(width=1000)
+
+st.altair_chart(avg_pokemon_chart)
+
+# --------------------
 # Draft Pick Order Visualization
 # --------------------
 
