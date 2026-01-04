@@ -71,17 +71,17 @@ st.header("Draft Pick Order – Full Draft View")
 # Load draft pick data
 df_draft_picks = pd.read_sql_query("""
     SELECT
-        external_draft_id,
+        draft_id,
         "order" AS draft_order,
         pokemon,
         drafted_by,
         cost
     FROM draft_pokemon_v2
-    ORDER BY external_draft_id, draft_order
+    ORDER BY draft_id, draft_order
 """, conn)
 
 # Draft selector
-draft_ids = sorted(df_draft_picks["external_draft_id"].unique())
+draft_ids = sorted(df_draft_picks["draft_id"].unique())
 
 selected_draft = st.selectbox(
     "Select a Draft",
@@ -89,7 +89,7 @@ selected_draft = st.selectbox(
 )
 
 df_selected_draft = df_draft_picks[
-    df_draft_picks["external_draft_id"] == selected_draft
+    df_draft_picks["draft_id"] == selected_draft
 ]
 
 # Calculate average cost for the draft
