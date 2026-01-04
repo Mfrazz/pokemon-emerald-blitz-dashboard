@@ -12,34 +12,6 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "PokemonDraftData.db")
 # Connect to SQLite database
 conn = sqlite3.connect(DB_PATH)
 
-# Load top 3 Pokémon per draft
-df_top3 = pd.read_sql_query("SELECT * FROM vw_top3_pokemon_per_draft;", conn)
-
-st.title("Pokémon Emerald Blitz Draft Data")
-st.header("Top 3 Most Expensive Pokémon per Draft")
-st.write("This chart shows the top 3 most expensive Pokémon for each draft.")
-
-top3_chart = alt.Chart(df_top3).mark_bar().encode(
-    x='pokemon:N',               # Pokémon names on x-axis
-    y='cost:Q',                  # Cost on y-axis
-    color='draft_id:N',          # Different color for each draft
-    tooltip=['draft_id', 'pokemon', 'drafted_by', 'cost', 'draft_order']  # hover info
-).properties(width=700)
-
-st.altair_chart(top3_chart)
-
-draft_filter = st.selectbox("Select Draft", options=df_top3['draft_id'].unique())
-df_top3_filtered = df_top3[df_top3['draft_id'] == draft_filter]
-
-filtered_chart = alt.Chart(df_top3_filtered).mark_bar().encode(
-    x='pokemon:N',
-    y='cost:Q',
-    color='draft_id:N',
-    tooltip=['draft_id', 'pokemon', 'drafted_by', 'cost', 'draft_order']
-).properties(width=700)
-
-st.altair_chart(filtered_chart)
-
 #NEW CHART AVERAGE COST FOR EACH POKEMON
 
 df_avg_pokemon = pd.read_sql_query("""
@@ -87,3 +59,33 @@ avg_pokemon_chart = alt.Chart(df_avg_pokemon_filtered).mark_bar().encode(
 ).properties(width=1000)
 
 st.altair_chart(avg_pokemon_chart)
+
+
+# Load top 3 Pokémon per draft
+df_top3 = pd.read_sql_query("SELECT * FROM vw_top3_pokemon_per_draft;", conn)
+
+st.title("Pokémon Emerald Blitz Draft Data")
+st.header("Top 3 Most Expensive Pokémon per Draft")
+st.write("This chart shows the top 3 most expensive Pokémon for each draft.")
+
+top3_chart = alt.Chart(df_top3).mark_bar().encode(
+    x='pokemon:N',               # Pokémon names on x-axis
+    y='cost:Q',                  # Cost on y-axis
+    color='draft_id:N',          # Different color for each draft
+    tooltip=['draft_id', 'pokemon', 'drafted_by', 'cost', 'draft_order']  # hover info
+).properties(width=700)
+
+st.altair_chart(top3_chart)
+
+draft_filter = st.selectbox("Select Draft", options=df_top3['draft_id'].unique())
+df_top3_filtered = df_top3[df_top3['draft_id'] == draft_filter]
+
+filtered_chart = alt.Chart(df_top3_filtered).mark_bar().encode(
+    x='pokemon:N',
+    y='cost:Q',
+    color='draft_id:N',
+    tooltip=['draft_id', 'pokemon', 'drafted_by', 'cost', 'draft_order']
+).properties(width=700)
+
+st.altair_chart(filtered_chart)
+
