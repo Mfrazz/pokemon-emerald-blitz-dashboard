@@ -66,23 +66,44 @@ st.altair_chart(avg_pokemon_chart)
 # Draft Pick Order Visualization
 # --------------------
 
-st.header("Draft 2 – Pokémon Costs")
+st.header("Pokémon Costs by Draft")
 
-# Load ONLY draft_id = 2
+# -----------------------------
+# Load all draft IDs
+# -----------------------------
+draft_ids_df = pd.read_sql_query("""
+    SELECT DISTINCT draft_id
+    FROM draft_pokemon_v2
+    ORDER BY draft_id
+""", conn)
+
+draft_ids = draft_ids_df["draft_id"].tolist()
+
+# Draft selector
+selected_draft = st.selectbox(
+    "Select Draft",
+    draft_ids
+)
+
+# -----------------------------
+# Load data for selected draft
+# -----------------------------
 df = pd.read_sql_query("""
     SELECT
         pokemon,
         cost
     FROM draft_pokemon_v2
-    WHERE draft_id = 2
-""", conn)
+    WHERE draft_id = ?
+""", conn, params=(selected_draft,))
 
 # Safety check
 if df.empty:
-    st.error("No data found for draft_id = 2")
+    st.warning("No data found for this draft.")
     st.stop()
 
-# Simple bar chart
+# -----------------------------
+# Bar chart
+# -----------------------------
 chart = alt.Chart(df).mark_bar().encode(
     x=alt.X(
         "pokemon:N",
@@ -100,7 +121,7 @@ chart = alt.Chart(df).mark_bar().encode(
 ).properties(
     width=1000,
     height=450,
-    title="Draft 2 – Cost per Pokémon"
+    title=f"Draft {selected_draft} – Cost per Pokémon"
 )
 
 st.altair_chart(chart, use_container_width=True)
