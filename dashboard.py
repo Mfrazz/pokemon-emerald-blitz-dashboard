@@ -90,9 +90,10 @@ selected_draft = st.selectbox(
 # -----------------------------
 df = pd.read_sql_query("""
     SELECT
+        draft_id,
+        draft_order,
         pokemon,
-        cost,
-        "order" AS draft_order
+        cost
     FROM draft_pokemon_v2
     WHERE draft_id = ?
     ORDER BY draft_order
@@ -109,16 +110,12 @@ if df.empty:
 avg_cost = df["cost"].mean()
 
 # -----------------------------
-# Bar chart (ordered by draft pick)
+# Bar chart (ONE bar per pick, Egg-safe)
 # -----------------------------
 bars = alt.Chart(df).mark_bar().encode(
     x=alt.X(
-        "pokemon:N",
-        title="Pokémon (Draft Order)",
-        sort=alt.SortField(
-            field="draft_order",
-            order="ascending"
-        )
+        "draft_order:O",
+        title="Draft Order"
     ),
     y=alt.Y(
         "cost:Q",
