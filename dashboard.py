@@ -63,7 +63,7 @@ avg_pokemon_chart = alt.Chart(df_avg_pokemon_filtered).mark_bar().encode(
 st.altair_chart(avg_pokemon_chart)
 
 # --------------------
-# Draft Pick Order Visualization
+# Draft Pick Order Visualization (Fixed)
 # --------------------
 
 st.header("Draft Pick Order – Full Draft View")
@@ -92,10 +92,13 @@ df_selected_draft = df_draft_picks[
     df_draft_picks["draft_id"] == selected_draft
 ]
 
-# Calculate average cost for the draft
+# Calculate average cost for the selected draft
 avg_cost = df_selected_draft["cost"].mean()
 
-# Bar chart (colored by drafter)
+# Dynamically scale width based on number of picks
+chart_width = max(900, len(df_selected_draft) * 30)
+
+# Bar chart (NOT stacked)
 bars = alt.Chart(df_selected_draft).mark_bar().encode(
     x=alt.X(
         "draft_order:O",
@@ -106,9 +109,11 @@ bars = alt.Chart(df_selected_draft).mark_bar().encode(
     color=alt.Color(
         "drafted_by:N",
         title="Drafted By",
-        legend=alt.Legend(orient="right")
+        legend=alt.Legend(orient="right"),
+        stack=None  # 🔴 THIS PREVENTS STACKING
     ),
     tooltip=[
+        alt.Tooltip("draft_order:O", title="Pick"),
         alt.Tooltip("pokemon:N", title="Pokémon"),
         alt.Tooltip("drafted_by:N", title="Drafted By"),
         alt.Tooltip("cost:Q", title="Cost")
@@ -127,13 +132,12 @@ avg_line = alt.Chart(
 
 # Combine chart
 draft_order_chart = (bars + avg_line).properties(
-    width=900,
+    width=chart_width,
     height=450,
     title=f"Draft {selected_draft} – Pokémon Draft Order (Avg Cost: {round(avg_cost, 1)})"
 )
 
 st.altair_chart(draft_order_chart, use_container_width=True)
-
 
 # Load top 3 Pokémon per draft
 df_top3 = pd.read_sql_query("SELECT * FROM vw_top3_pokemon_per_draft;", conn)
