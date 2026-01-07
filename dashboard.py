@@ -84,7 +84,7 @@ df_avg_pokemon_patch = pd.read_sql_query(f"""
            ROUND(AVG(dp.cost), 2) AS avg_cost,
            COUNT(*) AS times_drafted
     FROM draft_pokemon_v2 dp
-    JOIN draft_event_v2 de ON dp.draft_id = de.draft_id
+    JOIN draft_event_v2 de ON dp.draft_id = de.id
     WHERE de.patch = '{selected_patch}'
     GROUP BY dp.pokemon
 """, conn)
