@@ -14,95 +14,53 @@ conn = sqlite3.connect(DB_PATH)
 
 st.title("Pokémon Emerald Blitz Draft Data")
 
-# ----------------------------
-# TOP CHART — PATCH FILTERED
-# ----------------------------
-st.header("Top / Bottom Pokémon by Patch")
+#NEW CHART AVERAGE COST FOR EACH POKEMON
 
-# --- UI CONTROLS ---
-patches_df = pd.read_sql("""
-    SELECT DISTINCT patch
-    FROM draft_event_v2
-    WHERE patch IS NOT NULL
-    ORDER BY patch DESC
+df_avg_pokemon = pd.read_sql_query("""
+    SELECT pokemon, ROUND(AVG(cost), 2) AS avg_cost, COUNT(*) AS times_drafted
+    FROM draft_pokemon_v2
+    GROUP BY pokemon
 """, conn)
 
-patch_list = patches_df["patch"].tolist()
+# --------------------
+# Streamlit UI
+# --------------------
+st.header("Average Cost per Pokémon Across All Drafts")
+st.write("Shows the average draft price of each Pokémon and how often it was drafted.")
 
-selected_patch = st.selectbox(
-    "Select Patch",
-    patch_list
+# Top/Bottom selector
+filter_type = st.radio("Show Top or Bottom Pokémon by Average Cost", ("Top", "Bottom"))
+x = st.number_input("How many Pokémon to show?", min_value=1, max_value=len(df_avg_pokemon), value=10)
+
+# Sort data based on Top or Bottom
+df_avg_pokemon_sorted = df_avg_pokemon.sort_values(
+    by='avg_cost',
+    ascending=(filter_type == "Bottom")  # Bottom = ascending, Top = descending
 )
 
-top_bottom = st.radio(
-    "Show",
-    ["Top", "Bottom"],
-    horizontal=True
+# Take top/bottom X Pokémon
+df_avg_pokemon_filtered = df_avg_pokemon_sorted.head(x)
+
+# --------------------
+# Altair color scale (light blue → dark blue)
+# --------------------
+color_scale = alt.Scale(
+    domain=[df_avg_pokemon_filtered['times_drafted'].min(),
+            df_avg_pokemon_filtered['times_drafted'].max()],
+    range=['#9999FF', '#000099']  # light blue → dark blue
 )
 
-x_limit = st.slider(
-    "Number of Pokémon",
-    min_value=5,
-    max_value=30,
-    value=10,
-    step=1
-)
+# --------------------
+# Create bar chart
+# --------------------
+avg_pokemon_chart = alt.Chart(df_avg_pokemon_filtered).mark_bar().encode(
+    x=alt.X('pokemon:N', sort=df_avg_pokemon_filtered['pokemon'].tolist()),
+    y='avg_cost:Q',
+    color=alt.Color('times_drafted:Q', scale=color_scale, legend=alt.Legend(title="Times Drafted")),
+    tooltip=['pokemon', 'avg_cost', 'times_drafted']
+).properties(width=1000)
 
-order_direction = "DESC" if top_bottom == "Top" else "ASC"
-
-# ----------------------------
-# DATA QUERY
-# ----------------------------
-query = f"""
-SELECT
-    p.pokemon,
-    ROUND(AVG(p.cost), 2) AS avg_cost,
-    COUNT(*) AS times_drafted
-FROM draft_pokemon_v2 p
-JOIN draft_event_v2 d
-    ON p.draft_id = d.id
-WHERE d.patch = ?
-GROUP BY p.pokemon
-ORDER BY avg_cost {order_direction}
-LIMIT {x_limit}
-"""
-
-df = pd.read_sql(query, conn, params=(selected_patch,))
-
-# ----------------------------
-# CHART
-# ----------------------------
-if df.empty:
-    st.warning("No data available for this patch.")
-else:
-    chart = (
-        alt.Chart(df)
-        .mark_bar()
-        .encode(
-            x=alt.X(
-                "avg_cost:Q",
-                title="Average Cost",
-                scale=alt.Scale(zero=False)
-            ),
-            y=alt.Y(
-                "pokemon_name:N",
-                sort="-x",
-                title="Pokémon"
-            ),
-            tooltip=[
-                alt.Tooltip("pokemon_name:N", title="Pokémon"),
-                alt.Tooltip("avg_cost:Q", title="Avg Cost"),
-                alt.Tooltip("times_drafted:Q", title="Times Drafted")
-            ]
-        )
-        .properties(
-            width=700,
-            height=400,
-            title=f"{top_bottom} {x_limit} Pokémon — Patch {selected_patch}"
-        )
-    )
-
-    st.altair_chart(chart, use_container_width=True)
+st.altair_chart(avg_pokemon_chart)
 
 # --------------------
 # Draft Pick Order Visualization
