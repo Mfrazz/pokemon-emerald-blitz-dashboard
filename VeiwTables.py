@@ -42,17 +42,17 @@ print(df.head())
 
 print('draft_event_V2')
 
-df = pd.read_sql("SELECT count(*) FROM draft_event_V2", engine)
+df = pd.read_sql("SELECT * FROM draft_event_V2", engine)
 print(df.head())
 
 print('draft_players_V2')
 
-df = pd.read_sql("SELECT count(*) FROM draft_players_V2", engine)
+df = pd.read_sql("SELECT * FROM draft_players_V2", engine)
 print(df.head())
 
 print('draft_pokemon_V2')
 
-df = pd.read_sql("SELECT count(*) FROM draft_pokemon_V2", engine)
+df = pd.read_sql("SELECT * FROM draft_pokemon_V2", engine)
 print(df.head())
 
 

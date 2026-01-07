@@ -54,6 +54,7 @@ def process_group3_csv(file_path):
     external_draft_id = None
     date_time = None
     total_sold = None
+    patch = None
 
     # ---------- HEADER SCAN ----------
     for row in rows:
@@ -62,6 +63,9 @@ def process_group3_csv(file_path):
 
         if row[0].startswith("Draft ID:"):
             external_draft_id = row[0].split(":", 1)[1].strip()
+
+        if row[0].startswith("Patch:"):
+            patch = row[0].split(":", 1)[1].strip()
 
         elif row[0].startswith("Date:"):
             date_part = row[0].replace("Date:", "").strip()
@@ -72,13 +76,18 @@ def process_group3_csv(file_path):
         elif row[0].startswith("Total Pokemon Sold:"):
             total_sold = int(row[0].split(":", 1)[1])
 
-    if not all([external_draft_id, date_time, total_sold]):
-        raise ValueError(f"Missing header data in {os.path.basename(file_path)}")
+    # ---------- Skip Bad Draft IDs ------
+    if external_draft_id in ('860538035132', '072501118051'):
+        print(f"Skipping bad draft ID: {external_draft_id}")
+        return
 
     # ---------- DUPLICATE SKIP ----------
     if draft_exists(external_draft_id):
         print(f"Skipping already ingested draft {external_draft_id}")
         return
+
+    if not all([external_draft_id, patch, date_time, total_sold]):
+        raise ValueError(f"Missing header data in {os.path.basename(file_path)}")
 
     # ---------- FIND TABLES ----------
     players_start = None
@@ -101,11 +110,12 @@ def process_group3_csv(file_path):
         result = conn.execute(
             text("""
                 INSERT INTO draft_event_v2
-                (external_draft_id, date_time, total_pokemon_sold)
-                VALUES (:eid, :dt, :total)
+                (external_draft_id, patch, date_time, total_pokemon_sold)
+                VALUES (:eid,:patch, :dt, :total)
             """),
             {
                 "eid": external_draft_id,
+                "patch": patch,
                 "dt": date_time,
                 "total": total_sold
             }
