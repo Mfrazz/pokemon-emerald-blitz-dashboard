@@ -62,6 +62,64 @@ avg_pokemon_chart = alt.Chart(df_avg_pokemon_filtered).mark_bar().encode(
 
 st.altair_chart(avg_pokemon_chart)
 
+# NEW CHART: AVERAGE COST PER POKEMON BY PATCH
+
+# Get list of patches from draft_event_v2
+patches = pd.read_sql_query("""
+    SELECT DISTINCT patch
+    FROM draft_event_v2
+    ORDER BY patch
+""", conn)['patch'].tolist()
+
+# Streamlit UI
+st.header("Average Cost per Pokémon by Patch")
+st.write("Shows the average draft price of each Pokémon and how often it was drafted, filtered by patch.")
+
+# Patch selector
+selected_patch = st.selectbox("Select Patch", patches)
+
+# Pull Pokémon data for the selected patch
+df_avg_pokemon_patch = pd.read_sql_query(f"""
+    SELECT dp.pokemon,
+           ROUND(AVG(dp.cost), 2) AS avg_cost,
+           COUNT(*) AS times_drafted
+    FROM draft_pokemon_v2 dp
+    JOIN draft_event_v2 de ON dp.draft_id = de.draft_id
+    WHERE de.patch = '{selected_patch}'
+    GROUP BY dp.pokemon
+""", conn)
+
+# Top/Bottom selector
+filter_type_patch = st.radio(f"Show Top or Bottom Pokémon by Average Cost ({selected_patch})", ("Top", "Bottom"))
+x_patch = st.number_input(f"How many Pokémon to show for {selected_patch}?",
+                          min_value=1, max_value=len(df_avg_pokemon_patch), value=10, key="patch_num")
+
+# Sort data based on Top or Bottom
+df_avg_pokemon_patch_sorted = df_avg_pokemon_patch.sort_values(
+    by='avg_cost',
+    ascending=(filter_type_patch == "Bottom")  # Bottom = ascending, Top = descending
+)
+
+# Take top/bottom X Pokémon
+df_avg_pokemon_patch_filtered = df_avg_pokemon_patch_sorted.head(x_patch)
+
+# Altair color scale (light blue → dark blue)
+color_scale_patch = alt.Scale(
+    domain=[df_avg_pokemon_patch_filtered['times_drafted'].min(),
+            df_avg_pokemon_patch_filtered['times_drafted'].max()],
+    range=['#9999FF', '#000099']  # light blue → dark blue
+)
+
+# Create bar chart
+avg_pokemon_patch_chart = alt.Chart(df_avg_pokemon_patch_filtered).mark_bar().encode(
+    x=alt.X('pokemon:N', sort=df_avg_pokemon_patch_filtered['pokemon'].tolist()),
+    y='avg_cost:Q',
+    color=alt.Color('times_drafted:Q', scale=color_scale_patch, legend=alt.Legend(title="Times Drafted")),
+    tooltip=['pokemon', 'avg_cost', 'times_drafted']
+).properties(width=1000)
+
+st.altair_chart(avg_pokemon_patch_chart)
+
 # --------------------
 # Draft Pick Order Visualization
 # --------------------
