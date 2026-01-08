@@ -12,227 +12,303 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "PokemonDraftData.db")
 # Connect to SQLite database
 conn = sqlite3.connect(DB_PATH)
 
-st.title("Pokémon Emerald Blitz Draft Data")
+tab_welcome, tab_global, tab_patch, tab_players, tab_appendix = st.tabs([
+    "Welcome",
+    "All Draft Data",
+    "Patch Trends",
+    "Player Data",
+    "Appendix"
+])
 
-#NEW CHART AVERAGE COST FOR EACH POKEMON
+#Add all information for Welcome tab here
 
-df_avg_pokemon = pd.read_sql_query("""
-    SELECT pokemon, ROUND(AVG(cost), 2) AS avg_cost, COUNT(*) AS times_drafted
-    FROM draft_pokemon_v2
-    GROUP BY pokemon
-""", conn)
+with tab_welcome:
+    st.title("Pokémon Emerald Blitz Dashboard")
 
-# --------------------
-# Streamlit UI
-# --------------------
-st.header("Average Cost per Pokémon Across All Drafts")
-st.write("Shows the average draft price of each Pokémon and how often it was drafted.")
+    st.markdown("""
+    Welcome to the **Pokémon Emerald Blitz Draft Dashboard**!
 
-# Top/Bottom selector
-filter_type = st.radio("Show Top or Bottom Pokémon by Average Cost", ("Top", "Bottom"))
-x = st.number_input("How many Pokémon to show?", min_value=1, max_value=len(df_avg_pokemon), value=10)
+    This dashboard provides insights into:
+    - Draft trends across all time
+    - How patches affect the meta
+    - Player behavior and preferences
+    - Full access to the underlying data
+    """)
 
-# Sort data based on Top or Bottom
-df_avg_pokemon_sorted = df_avg_pokemon.sort_values(
-    by='avg_cost',
-    ascending=(filter_type == "Bottom")  # Bottom = ascending, Top = descending
-)
+    st.subheader("Links")
+    st.markdown("""
+    - 💬 [Discord](https://discord.gg/YOUR_LINK_HERE)
+    - 📄 Rules & Format (link coming soon)
+    - 📊 GitHub Repository (optional)
+    """)
 
-# Take top/bottom X Pokémon
-df_avg_pokemon_filtered = df_avg_pokemon_sorted.head(x)
+    st.info("Use the tabs above to explore the data.")
 
-# --------------------
-# Altair color scale (light blue → dark blue)
-# --------------------
-color_scale = alt.Scale(
-    domain=[df_avg_pokemon_filtered['times_drafted'].min(),
-            df_avg_pokemon_filtered['times_drafted'].max()],
-    range=['#9999FF', '#000099']  # light blue → dark blue
-)
+#tab for all data across all patches
 
-# --------------------
-# Create bar chart
-# --------------------
-avg_pokemon_chart = alt.Chart(df_avg_pokemon_filtered).mark_bar().encode(
-    x=alt.X('pokemon:N', sort=df_avg_pokemon_filtered['pokemon'].tolist()),
-    y='avg_cost:Q',
-    color=alt.Color('times_drafted:Q', scale=color_scale, legend=alt.Legend(title="Times Drafted")),
-    tooltip=['pokemon', 'avg_cost', 'times_drafted']
-).properties(width=1000)
+with tab_global:
+    st.header("All Draft Data (All Patches Combined)")
 
-st.altair_chart(avg_pokemon_chart)
+    st.markdown("""
+    This section shows draft data **across all drafts**, regardless of patch.
+    """)
 
-# NEW CHART: AVERAGE COST PER POKEMON BY PATCH
+    st.subheader("Average Cost per Pokémon Across All Drafts")
 
-# Get list of patches from draft_event_v2
-patches = pd.read_sql_query("""
-    SELECT DISTINCT patch
-    FROM draft_event_v2
-    ORDER BY patch
-""", conn)['patch'].tolist()
+    # NEW CHART AVERAGE COST FOR EACH POKEMON
 
-# Streamlit UI
-st.header("Average Cost per Pokémon by Patch")
-st.write("Shows the average draft price of each Pokémon and how often it was drafted, filtered by patch.")
+    df_avg_pokemon = pd.read_sql_query("""
+                                       SELECT pokemon, ROUND(AVG(cost), 2) AS avg_cost, COUNT(*) AS times_drafted
+                                       FROM draft_pokemon_v2
+                                       GROUP BY pokemon
+                                       """, conn)
 
-# Patch selector
-selected_patch = st.selectbox("Select Patch", patches)
+    # --------------------
+    # Streamlit UI
+    # --------------------
+    st.header("Average Cost per Pokémon Across All Drafts")
+    st.write("Shows the average draft price of each Pokémon and how often it was drafted.")
 
-# Pull Pokémon data for the selected patch
-df_avg_pokemon_patch = pd.read_sql_query(f"""
-    SELECT dp.pokemon,
-           ROUND(AVG(dp.cost), 2) AS avg_cost,
-           COUNT(*) AS times_drafted
-    FROM draft_pokemon_v2 dp
-    JOIN draft_event_v2 de ON dp.draft_id = de.id
-    WHERE de.patch = '{selected_patch}'
-    GROUP BY dp.pokemon
-""", conn)
+    # Top/Bottom selector
+    filter_type = st.radio("Show Top or Bottom Pokémon by Average Cost", ("Top", "Bottom"))
+    x = st.number_input("How many Pokémon to show?", min_value=1, max_value=len(df_avg_pokemon), value=10)
 
-# Top/Bottom selector
-filter_type_patch = st.radio(f"Show Top or Bottom Pokémon by Average Cost ({selected_patch})", ("Top", "Bottom"))
-x_patch = st.number_input(f"How many Pokémon to show for {selected_patch}?",
-                          min_value=1, max_value=len(df_avg_pokemon_patch), value=10, key="patch_num")
+    # Sort data based on Top or Bottom
+    df_avg_pokemon_sorted = df_avg_pokemon.sort_values(
+        by='avg_cost',
+        ascending=(filter_type == "Bottom")  # Bottom = ascending, Top = descending
+    )
 
-# Sort data based on Top or Bottom
-df_avg_pokemon_patch_sorted = df_avg_pokemon_patch.sort_values(
-    by='avg_cost',
-    ascending=(filter_type_patch == "Bottom")  # Bottom = ascending, Top = descending
-)
+    # Take top/bottom X Pokémon
+    df_avg_pokemon_filtered = df_avg_pokemon_sorted.head(x)
 
-# Take top/bottom X Pokémon
-df_avg_pokemon_patch_filtered = df_avg_pokemon_patch_sorted.head(x_patch)
+    # --------------------
+    # Altair color scale (light blue → dark blue)
+    # --------------------
+    color_scale = alt.Scale(
+        domain=[df_avg_pokemon_filtered['times_drafted'].min(),
+                df_avg_pokemon_filtered['times_drafted'].max()],
+        range=['#9999FF', '#000099']  # light blue → dark blue
+    )
 
-# Altair color scale (light blue → dark blue)
-color_scale_patch = alt.Scale(
-    domain=[df_avg_pokemon_patch_filtered['times_drafted'].min(),
-            df_avg_pokemon_patch_filtered['times_drafted'].max()],
-    range=['#9999FF', '#000099']  # light blue → dark blue
-)
+    # --------------------
+    # Create bar chart
+    # --------------------
+    avg_pokemon_chart = alt.Chart(df_avg_pokemon_filtered).mark_bar().encode(
+        x=alt.X('pokemon:N', sort=df_avg_pokemon_filtered['pokemon'].tolist()),
+        y='avg_cost:Q',
+        color=alt.Color('times_drafted:Q', scale=color_scale, legend=alt.Legend(title="Times Drafted")),
+        tooltip=['pokemon', 'avg_cost', 'times_drafted']
+    ).properties(width=1000)
 
-# Create bar chart
-avg_pokemon_patch_chart = alt.Chart(df_avg_pokemon_patch_filtered).mark_bar().encode(
-    x=alt.X('pokemon:N', sort=df_avg_pokemon_patch_filtered['pokemon'].tolist()),
-    y='avg_cost:Q',
-    color=alt.Color('times_drafted:Q', scale=color_scale_patch, legend=alt.Legend(title="Times Drafted")),
-    tooltip=['pokemon', 'avg_cost', 'times_drafted']
-).properties(width=1000)
+    st.altair_chart(avg_pokemon_chart)
 
-st.altair_chart(avg_pokemon_patch_chart)
+    st.subheader("Other Global Insights (Coming Soon)")
+    st.write("- Most expensive Pokémon ever drafted")
+    st.write("- Most frequently drafted Pokémon")
+    st.write("- Players with the most drafts")
 
-# --------------------
-# Draft Pick Order Visualization
-# --------------------
+#tab for patch specific data
 
-st.header("Pokémon Costs by Draft (Draft Order)")
+with tab_patch:
+    st.header("Patch-Based Draft Trends")
 
-# -----------------------------
-# Load all draft IDs
-# -----------------------------
-draft_ids_df = pd.read_sql_query("""
-    SELECT DISTINCT draft_id
-    FROM draft_pokemon_v2
-    ORDER BY draft_id
-""", conn)
+    st.markdown("""
+    Analyze how draft behavior changes between patches.
+    """)
 
-draft_ids = draft_ids_df["draft_id"].tolist()
+    st.subheader("Top / Bottom Pokémon by Patch")
+    # NEW CHART: AVERAGE COST PER POKEMON BY PATCH
 
-# Draft selector
-selected_draft = st.selectbox(
-    "Select Draft",
-    draft_ids
-)
+    # Get list of patches from draft_event_v2
+    patches = pd.read_sql_query("""
+                                SELECT DISTINCT patch
+                                FROM draft_event_v2
+                                ORDER BY patch
+                                """, conn)['patch'].tolist()
 
-# -----------------------------
-# Load data for selected draft
-# -----------------------------
-df = pd.read_sql_query("""
-    SELECT
-        draft_id,
-        draft_order,
-        pokemon,
-        drafted_by,
-        cost
-    FROM draft_pokemon_v2
-    WHERE draft_id = ?
-    ORDER BY draft_order
-""", conn, params=(selected_draft,))
+    # Streamlit UI
+    st.header("Average Cost per Pokémon by Patch")
+    st.write("Shows the average draft price of each Pokémon and how often it was drafted, filtered by patch.")
 
-# Safety check
-if df.empty:
-    st.warning("No data found for this draft.")
-    st.stop()
+    # Patch selector
+    selected_patch = st.selectbox("Select Patch", patches)
 
-# -----------------------------
-# Average cost
-# -----------------------------
-avg_cost = df["cost"].mean()
+    # Pull Pokémon data for the selected patch
+    df_avg_pokemon_patch = pd.read_sql_query(f"""
+        SELECT dp.pokemon,
+               ROUND(AVG(dp.cost), 2) AS avg_cost,
+               COUNT(*) AS times_drafted
+        FROM draft_pokemon_v2 dp
+        JOIN draft_event_v2 de ON dp.draft_id = de.id
+        WHERE de.patch = '{selected_patch}'
+        GROUP BY dp.pokemon
+    """, conn)
 
-# -----------------------------
-# Bar chart (colored by drafter)
-# -----------------------------
-bars = alt.Chart(df).mark_bar().encode(
-    x=alt.X(
-        "draft_order:O",
-        title="Draft Order"
-    ),
-    y=alt.Y(
-        "cost:Q",
-        title="Cost"
-    ),
-    color=alt.Color(
-        "drafted_by:N",
-        title="Drafted By",
-        legend=alt.Legend(orient="right")
-    ),
-    tooltip=[
-        alt.Tooltip("draft_order:Q", title="Pick"),
-        alt.Tooltip("pokemon:N", title="Pokémon"),
-        alt.Tooltip("drafted_by:N", title="Drafted By"),
-        alt.Tooltip("cost:Q", title="Cost")
-    ]
-)
+    # Top/Bottom selector
+    filter_type_patch = st.radio(f"Show Top or Bottom Pokémon by Average Cost ({selected_patch})", ("Top", "Bottom"))
+    x_patch = st.number_input(f"How many Pokémon to show for {selected_patch}?",
+                              min_value=1, max_value=len(df_avg_pokemon_patch), value=10, key="patch_num")
 
-# -----------------------------
-# Average cost line
-# -----------------------------
-avg_line = alt.Chart(
-    pd.DataFrame({"avg_cost": [avg_cost]})
-).mark_rule(
-    color="red",
-    strokeDash=[6, 4],
-    size=2
-).encode(
-    y="avg_cost:Q"
-)
+    # Sort data based on Top or Bottom
+    df_avg_pokemon_patch_sorted = df_avg_pokemon_patch.sort_values(
+        by='avg_cost',
+        ascending=(filter_type_patch == "Bottom")  # Bottom = ascending, Top = descending
+    )
 
-# -----------------------------
-# Combine & render
-# -----------------------------
-chart = (bars + avg_line).properties(
-    width=1000,
-    height=450,
-    title=f"Draft {selected_draft} – Pokémon Cost by Draft Order (Avg: {round(avg_cost, 1)})"
-)
+    # Take top/bottom X Pokémon
+    df_avg_pokemon_patch_filtered = df_avg_pokemon_patch_sorted.head(x_patch)
 
-st.altair_chart(chart, use_container_width=True)
+    # Altair color scale (light blue → dark blue)
+    color_scale_patch = alt.Scale(
+        domain=[df_avg_pokemon_patch_filtered['times_drafted'].min(),
+                df_avg_pokemon_patch_filtered['times_drafted'].max()],
+        range=['#9999FF', '#000099']  # light blue → dark blue
+    )
+
+    # Create bar chart
+    avg_pokemon_patch_chart = alt.Chart(df_avg_pokemon_patch_filtered).mark_bar().encode(
+        x=alt.X('pokemon:N', sort=df_avg_pokemon_patch_filtered['pokemon'].tolist()),
+        y='avg_cost:Q',
+        color=alt.Color('times_drafted:Q', scale=color_scale_patch, legend=alt.Legend(title="Times Drafted")),
+        tooltip=['pokemon', 'avg_cost', 'times_drafted']
+    ).properties(width=1000)
+
+    st.altair_chart(avg_pokemon_patch_chart)
+
+with tab_players:
+    st.header("Player Data by Patch")
+
+    st.markdown("""
+    Explore player behavior and performance across patches.
+    """)
+
+    st.subheader("Player Selector")
+    st.selectbox(
+        "Select Player",
+        ["All Players (placeholder)", "Player A", "Player B"]
+    )
+
+    st.subheader("Player Draft Trends")
+    st.write("Charts coming soon:")
+    st.write("- Pokémon drafted per patch")
+    st.write("- Average spend per patch")
+    st.write("- Signature Pokémon")
+
+    # --------------------
+    # Draft Pick Order Visualization
+    # --------------------
+
+    st.header("Pokémon Costs by Draft (Draft Order)")
+
+    # -----------------------------
+    # Load all draft IDs
+    # -----------------------------
+    draft_ids_df = pd.read_sql_query("""
+                                     SELECT DISTINCT draft_id
+                                     FROM draft_pokemon_v2
+                                     ORDER BY draft_id
+                                     """, conn)
+
+    draft_ids = draft_ids_df["draft_id"].tolist()
+
+    # Draft selector
+    selected_draft = st.selectbox(
+        "Select Draft",
+        draft_ids
+    )
+
+    # -----------------------------
+    # Load data for selected draft
+    # -----------------------------
+    df = pd.read_sql_query("""
+                           SELECT draft_id,
+                                  draft_order,
+                                  pokemon,
+                                  drafted_by,
+                                  cost
+                           FROM draft_pokemon_v2
+                           WHERE draft_id = ?
+                           ORDER BY draft_order
+                           """, conn, params=(selected_draft,))
+
+    # Safety check
+    if df.empty:
+        st.warning("No data found for this draft.")
+        st.stop()
+
+    # -----------------------------
+    # Average cost
+    # -----------------------------
+    avg_cost = df["cost"].mean()
+
+    # -----------------------------
+    # Bar chart (colored by drafter)
+    # -----------------------------
+    bars = alt.Chart(df).mark_bar().encode(
+        x=alt.X(
+            "draft_order:O",
+            title="Draft Order"
+        ),
+        y=alt.Y(
+            "cost:Q",
+            title="Cost"
+        ),
+        color=alt.Color(
+            "drafted_by:N",
+            title="Drafted By",
+            legend=alt.Legend(orient="right")
+        ),
+        tooltip=[
+            alt.Tooltip("draft_order:Q", title="Pick"),
+            alt.Tooltip("pokemon:N", title="Pokémon"),
+            alt.Tooltip("drafted_by:N", title="Drafted By"),
+            alt.Tooltip("cost:Q", title="Cost")
+        ]
+    )
+
+    # -----------------------------
+    # Average cost line
+    # -----------------------------
+    avg_line = alt.Chart(
+        pd.DataFrame({"avg_cost": [avg_cost]})
+    ).mark_rule(
+        color="red",
+        strokeDash=[6, 4],
+        size=2
+    ).encode(
+        y="avg_cost:Q"
+    )
+
+    # -----------------------------
+    # Combine & render
+    # -----------------------------
+    chart = (bars + avg_line).properties(
+        width=1000,
+        height=450,
+        title=f"Draft {selected_draft} – Pokémon Cost by Draft Order (Avg: {round(avg_cost, 1)})"
+    )
+
+    st.altair_chart(chart, use_container_width=True)
 
 
-# Load top 3 Pokémon per draft
-df_top3 = pd.read_sql_query("SELECT * FROM vw_top3_pokemon_per_draft;", conn)
 
 
-st.header("Top 3 Most Expensive Pokémon per Draft")
-st.write("This chart shows the top 3 most expensive Pokémon for each draft.")
-
-top3_chart = alt.Chart(df_top3).mark_bar().encode(
-    x='pokemon:N',               # Pokémon names on x-axis
-    y='cost:Q',                  # Cost on y-axis
-    color='draft_id:N',          # Different color for each draft
-    tooltip=['draft_id', 'pokemon', 'drafted_by', 'cost', 'draft_order']  # hover info
-).properties(width=700)
-
-st.altair_chart(top3_chart)
+# # Load top 3 Pokémon per draft
+# df_top3 = pd.read_sql_query("SELECT * FROM vw_top3_pokemon_per_draft;", conn)
+#
+#
+# st.header("Top 3 Most Expensive Pokémon per Draft")
+# st.write("This chart shows the top 3 most expensive Pokémon for each draft.")
+#
+# top3_chart = alt.Chart(df_top3).mark_bar().encode(
+#     x='pokemon:N',               # Pokémon names on x-axis
+#     y='cost:Q',                  # Cost on y-axis
+#     color='draft_id:N',          # Different color for each draft
+#     tooltip=['draft_id', 'pokemon', 'drafted_by', 'cost', 'draft_order']  # hover info
+# ).properties(width=700)
+#
+# st.altair_chart(top3_chart)
 
 
 
