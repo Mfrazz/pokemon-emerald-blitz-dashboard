@@ -77,7 +77,7 @@ def process_group3_csv(file_path):
             total_sold = int(row[0].split(":", 1)[1])
 
     # ---------- Skip Bad Draft IDs ------
-    if external_draft_id in ('860538035132', '072501118051'):
+    if external_draft_id in ('860538035132', '072501118051', '596019556640'):
         print(f"Skipping bad draft ID: {external_draft_id}")
         return
 
