@@ -292,6 +292,79 @@ with tab_players:
     st.altair_chart(chart, use_container_width=True)
 
 
+#appendix tab
+with tab_appendix:
+    st.header("Appendix: Raw Database Tables")
+
+    st.markdown("""
+    This appendix contains **all raw tables used in this dashboard**.
+
+    These tables are **free to use** for your own analysis, visualizations, or external tools.
+    You can:
+    - Sort columns
+    - Copy rows
+    - Export data for your own projects
+
+    If you build something cool, feel free to share it with the community!
+    """)
+
+    st.divider()
+
+    # --------------------
+    # draft_event_v2
+    # --------------------
+    st.subheader("draft_event_v2")
+    st.caption("One row per draft event (draft metadata such as date, patch, totals).")
+
+    df_draft_event = pd.read_sql_query(
+        "SELECT * FROM draft_event_v2",
+        conn
+    )
+
+    st.dataframe(
+        df_draft_event,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.divider()
+
+    # --------------------
+    # draft_players_v2
+    # --------------------
+    st.subheader("draft_players_v2")
+    st.caption("One row per player per draft.")
+
+    df_draft_players = pd.read_sql_query(
+        "SELECT * FROM draft_players_v2",
+        conn
+    )
+
+    st.dataframe(
+        df_draft_players,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.divider()
+
+    # --------------------
+    # draft_pokemon_v2
+    # --------------------
+    st.subheader("draft_pokemon_v2")
+    st.caption("One row per Pokémon pick (includes cost, draft order, and player).")
+
+    df_draft_pokemon = pd.read_sql_query(
+        "SELECT * FROM draft_pokemon_v2",
+        conn
+    )
+
+    st.dataframe(
+        df_draft_pokemon,
+        use_container_width=True,
+        hide_index=True
+    )
+
 
 
 # # Load top 3 Pokémon per draft
