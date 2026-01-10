@@ -195,101 +195,179 @@ with tab_players:
     st.write("- Average spend per patch")
     st.write("- Signature Pokémon")
 
+    st.header("Player Draft Value vs Global Average (All Patches)")
+
+    SQL_QUERY = """
+                WITH global_avg AS (
+                SELECT
+                    pokemon,
+                    AVG(cost) AS global_avg_cost
+                FROM draft_pokemon_v2
+                GROUP BY pokemon
+            ),
+            player_stats AS (
+                SELECT
+                    pokemon,
+                    LOWER(drafted_by) AS drafted_by,
+                    AVG(cost) AS player_avg_cost,
+                    COUNT(*) AS times_drafted
+                FROM draft_pokemon_v2
+                GROUP BY pokemon, LOWER(drafted_by)
+            ),
+            eligible_players AS (
+                SELECT drafted_by
+                FROM player_stats
+                WHERE times_drafted >= 2
+                GROUP BY drafted_by
+                HAVING COUNT(*) >= 3
+            )
+            SELECT
+                p.pokemon,
+                p.drafted_by,
+                p.player_avg_cost,
+                g.global_avg_cost,
+                p.times_drafted,
+                (p.player_avg_cost - g.global_avg_cost) AS delta
+            FROM player_stats p
+            JOIN global_avg g
+                ON p.pokemon = g.pokemon
+            JOIN eligible_players e
+                ON p.drafted_by = e.drafted_by
+            WHERE p.times_drafted >= 2
+                """
+
+    df_player_compare = pd.read_sql_query(SQL_QUERY, conn)
+
+    players = sorted(df_player_compare["drafted_by"].unique())
+    selected_player = st.selectbox("Select a Player", players)
+
+    df_player = df_player_compare[
+        df_player_compare["drafted_by"] == selected_player
+        ].copy()
+
+    df_player.sort_values("delta", inplace=True)
+
+    chart = alt.Chart(df_player).mark_bar().encode(
+        x=alt.X("pokemon:N", sort=df_player["pokemon"].tolist()),
+        y=alt.Y("delta:Q", title="Cost vs Global Average"),
+        color=alt.condition(
+            alt.datum.delta > 0,
+            alt.value("#E45756"),
+            alt.value("#4C78A8")
+        ),
+        tooltip=[
+            "pokemon",
+            alt.Tooltip("player_avg_cost:Q", title="Player Avg Cost", format=",.0f"),
+            alt.Tooltip("global_avg_cost:Q", title="Global Avg Cost", format=",.0f"),
+            alt.Tooltip("delta:Q", title="Difference", format="+,.0f"),
+            alt.Tooltip("times_drafted:Q", title="Times Drafted")
+        ]
+    ).properties(
+        width=1000,
+        height=400,
+        title=f"{selected_player}: Draft Behavior vs Global Average"
+    )
+
+    zero_line = alt.Chart(
+        pd.DataFrame({"y": [0]})
+    ).mark_rule(color="black").encode(y="y:Q")
+
+    st.altair_chart(chart + zero_line, use_container_width=True)
     # --------------------
     # Draft Pick Order Visualization
     # --------------------
 
-    st.header("Pokémon Costs by Draft (Draft Order)")
+    #st.header("Pokémon Costs by Draft (Draft Order)")
 
-    # -----------------------------
-    # Load all draft IDs
-    # -----------------------------
-    draft_ids_df = pd.read_sql_query("""
-                                     SELECT DISTINCT draft_id
-                                     FROM draft_pokemon_v2
-                                     ORDER BY draft_id
-                                     """, conn)
-
-    draft_ids = draft_ids_df["draft_id"].tolist()
-
-    # Draft selector
-    selected_draft = st.selectbox(
-        "Select Draft",
-        draft_ids
-    )
-
-    # -----------------------------
-    # Load data for selected draft
-    # -----------------------------
-    df = pd.read_sql_query("""
-                           SELECT draft_id,
-                                  draft_order,
-                                  pokemon,
-                                  drafted_by,
-                                  cost
-                           FROM draft_pokemon_v2
-                           WHERE draft_id = ?
-                           ORDER BY draft_order
-                           """, conn, params=(selected_draft,))
-
-    # Safety check
-    if df.empty:
-        st.warning("No data found for this draft.")
-        st.stop()
-
-    # -----------------------------
-    # Average cost
-    # -----------------------------
-    avg_cost = df["cost"].mean()
-
-    # -----------------------------
-    # Bar chart (colored by drafter)
-    # -----------------------------
-    bars = alt.Chart(df).mark_bar().encode(
-        x=alt.X(
-            "draft_order:O",
-            title="Draft Order"
-        ),
-        y=alt.Y(
-            "cost:Q",
-            title="Cost"
-        ),
-        color=alt.Color(
-            "drafted_by:N",
-            title="Drafted By",
-            legend=alt.Legend(orient="right")
-        ),
-        tooltip=[
-            alt.Tooltip("draft_order:Q", title="Pick"),
-            alt.Tooltip("pokemon:N", title="Pokémon"),
-            alt.Tooltip("drafted_by:N", title="Drafted By"),
-            alt.Tooltip("cost:Q", title="Cost")
-        ]
-    )
-
-    # -----------------------------
-    # Average cost line
-    # -----------------------------
-    avg_line = alt.Chart(
-        pd.DataFrame({"avg_cost": [avg_cost]})
-    ).mark_rule(
-        color="red",
-        strokeDash=[6, 4],
-        size=2
-    ).encode(
-        y="avg_cost:Q"
-    )
-
-    # -----------------------------
-    # Combine & render
-    # -----------------------------
-    chart = (bars + avg_line).properties(
-        width=1000,
-        height=450,
-        title=f"Draft {selected_draft} – Pokémon Cost by Draft Order (Avg: {round(avg_cost, 1)})"
-    )
-
-    st.altair_chart(chart, use_container_width=True)
+    # # -----------------------------
+    # # Load all draft IDs
+    # # -----------------------------
+    # draft_ids_df = pd.read_sql_query("""
+    #                                  SELECT DISTINCT draft_id
+    #                                  FROM draft_pokemon_v2
+    #                                  ORDER BY draft_id
+    #                                  """, conn)
+    #
+    # draft_ids = draft_ids_df["draft_id"].tolist()
+    #
+    # # Draft selector
+    # selected_draft = st.selectbox(
+    #     "Select Draft",
+    #     draft_ids
+    # )
+    #
+    # # -----------------------------
+    # # Load data for selected draft
+    # # -----------------------------
+    # df = pd.read_sql_query("""
+    #                        SELECT draft_id,
+    #                               draft_order,
+    #                               pokemon,
+    #                               drafted_by,
+    #                               cost
+    #                        FROM draft_pokemon_v2
+    #                        WHERE draft_id = ?
+    #                        ORDER BY draft_order
+    #                        """, conn, params=(selected_draft,))
+    #
+    # # Safety check
+    # if df.empty:
+    #     st.warning("No data found for this draft.")
+    #     st.stop()
+    #
+    # # -----------------------------
+    # # Average cost
+    # # -----------------------------
+    # avg_cost = df["cost"].mean()
+    #
+    # # -----------------------------
+    # # Bar chart (colored by drafter)
+    # # -----------------------------
+    # bars = alt.Chart(df).mark_bar().encode(
+    #     x=alt.X(
+    #         "draft_order:O",
+    #         title="Draft Order"
+    #     ),
+    #     y=alt.Y(
+    #         "cost:Q",
+    #         title="Cost"
+    #     ),
+    #     color=alt.Color(
+    #         "drafted_by:N",
+    #         title="Drafted By",
+    #         legend=alt.Legend(orient="right")
+    #     ),
+    #     tooltip=[
+    #         alt.Tooltip("draft_order:Q", title="Pick"),
+    #         alt.Tooltip("pokemon:N", title="Pokémon"),
+    #         alt.Tooltip("drafted_by:N", title="Drafted By"),
+    #         alt.Tooltip("cost:Q", title="Cost")
+    #     ]
+    # )
+    #
+    # # -----------------------------
+    # # Average cost line
+    # # -----------------------------
+    # avg_line = alt.Chart(
+    #     pd.DataFrame({"avg_cost": [avg_cost]})
+    # ).mark_rule(
+    #     color="red",
+    #     strokeDash=[6, 4],
+    #     size=2
+    # ).encode(
+    #     y="avg_cost:Q"
+    # )
+    #
+    # # -----------------------------
+    # # Combine & render
+    # # -----------------------------
+    # chart = (bars + avg_line).properties(
+    #     width=1000,
+    #     height=450,
+    #     title=f"Draft {selected_draft} – Pokémon Cost by Draft Order (Avg: {round(avg_cost, 1)})"
+    # )
+    #
+    # st.altair_chart(chart, use_container_width=True)
 
 
 #appendix tab
