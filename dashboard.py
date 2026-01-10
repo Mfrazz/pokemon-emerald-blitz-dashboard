@@ -360,7 +360,8 @@ with tab_players:
                 title="Pokémon",
                 axis=alt.Axis(
                     labelFontWeight="bold",
-                    labelFontSize=16
+                    labelFontSize=16,
+                    labelAngle=-60
                 )
                 ),
         y=alt.Y("delta:Q", title="Cost vs Global Average"),
