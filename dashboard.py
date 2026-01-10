@@ -292,6 +292,8 @@ with tab_players:
     st.write("- Signature Pokémon")
 
     st.header("Player Draft Value vs Global Average (All Patches)")
+    st.write("This graph shows the top 10 largest differences between what a player pays and what the average"
+             "price of each Pokemon is across all drafts. The player must have drafted the Pokemon at least 2 times.")
 
     SQL_QUERY = """
                 WITH global_avg AS (
@@ -341,10 +343,26 @@ with tab_players:
         df_player_compare["drafted_by"] == selected_player
         ].copy()
 
-    df_player.sort_values("delta", inplace=True)
+    # --- NEW: keep only top 10 most impactful Pokémon ---
+    df_player["abs_delta"] = df_player["delta"].abs()
+
+    df_player = (
+        df_player
+        .sort_values("abs_delta", ascending=False)
+        .head(10)
+    )
+
+    # Re-sort for diverging bar chart display
+    df_player = df_player.sort_values("delta")
 
     chart = alt.Chart(df_player).mark_bar().encode(
-        x=alt.X("pokemon:N", sort=df_player["pokemon"].tolist()),
+        x=alt.X("pokemon:N", sort=df_player["pokemon"].tolist(),
+                title="Pokémon",
+                axis=alt.Axis(
+                    labelFontWeight="bold",
+                    labelFontSize=16
+                )
+                ),
         y=alt.Y("delta:Q", title="Cost vs Global Average"),
         color=alt.condition(
             alt.datum.delta > 0,
