@@ -472,7 +472,6 @@ with tab_players:
                 ),
         y=alt.Y("delta:Q", title="Cost vs Global Average",
                 axis=alt.Axis(
-                    format=".0%",
                     titleFontWeight="bold",
                     titleFontSize=18
                 )),
