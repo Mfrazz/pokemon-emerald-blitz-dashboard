@@ -1,0 +1,3 @@
+[submodule "pokemon-assets"]
+	path = pokemon-assets
+	url = https://github.com/FranklyNathan/PokemonAuctionSite.git
