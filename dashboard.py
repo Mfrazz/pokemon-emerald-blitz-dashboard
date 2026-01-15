@@ -279,13 +279,98 @@ with tab_players:
     Explore player behavior and performance across patches.
     """)
 
-    st.subheader("Player Selector")
-    st.selectbox(
-        "Select Player",
-        ["All Players (placeholder)", "Player A", "Player B"]
-    )
+
 
     st.subheader("Player Draft Trends")
+
+    st.header("Signature Pokémon by Player (All Patches)")
+
+    st.write(
+        "Shows which Pokémon each player consistently drafts. Only players with 3 or more drafts are included, "
+        "and only counts as a miss if the Pokémon was available in that draft. "
+        "Additionally, only Pokémon that a player has seen at least 3 times are considered."
+    )
+
+    # --------------------
+    # SQL: calculate signature picks
+    # --------------------
+    SQL_SIGNATURE = """
+                    WITH player_stats AS (
+                        -- Count how many times each player drafted each pokemon
+                        SELECT LOWER(pp.drafted_by) AS drafted_by, \
+                               pp.pokemon, \
+                               COUNT(*)             AS times_drafted
+                        FROM draft_pokemon_v2 pp
+                        GROUP BY LOWER(pp.drafted_by), pp.pokemon),
+                         pokemon_available AS (
+                             -- Count how many drafts each player could have drafted each pokemon
+                             SELECT LOWER(dp.player_name)       AS drafted_by, \
+                                    pp.pokemon, \
+                                    COUNT(DISTINCT dp.draft_id) AS times_available
+                             FROM draft_players_v2 dp
+                                      JOIN draft_pokemon_v2 pp
+                                           ON dp.draft_id = pp.draft_id
+                             GROUP BY LOWER(dp.player_name), pp.pokemon)
+                    SELECT a.drafted_by, \
+                           a.pokemon, \
+                           COALESCE(s.times_drafted, 0)                                    AS times_drafted, \
+                           a.times_available, \
+                           CAST(COALESCE(s.times_drafted, 0) AS FLOAT) / a.times_available AS percent_drafted
+                    FROM pokemon_available a
+                             LEFT JOIN player_stats s
+                                       ON a.drafted_by = s.drafted_by
+                                           AND a.pokemon = s.pokemon
+                    WHERE a.times_available >= 3
+                    ORDER BY a.drafted_by, percent_drafted DESC \
+                    """
+
+    # --------------------
+    # Load into Pandas
+    # --------------------
+    df_sig = pd.read_sql_query(SQL_SIGNATURE, conn)
+
+    # Filter players with at least one signature pick (>= 60%)
+    df_sig = df_sig[df_sig["percent_drafted"] >= 0.6]
+
+    # Get list of players
+    players = sorted(df_sig["drafted_by"].unique())
+    selected_player = st.selectbox("Select a Player", players)
+
+    # Filter to selected player
+    df_player_sig = df_sig[df_sig["drafted_by"] == selected_player].copy()
+
+    # Add column for color based on threshold
+    df_player_sig["sig_type"] = df_player_sig["percent_drafted"].apply(
+        lambda x: "Super Signature" if x >= 0.8 else "Signature"
+    )
+
+    # --------------------
+    # Altair bar chart
+    # --------------------
+    sig_chart = (
+        alt.Chart(df_player_sig)
+        .mark_bar()
+        .encode(
+            x=alt.X("pokemon:N", sort=df_player_sig["pokemon"].tolist(), title="Pokemon"),
+            y=alt.Y("percent_drafted:Q", title="Draft Rate"),
+            color=alt.Color(
+                "sig_type:N",
+                scale=alt.Scale(domain=["Signature", "Super Signature"], range=["#9999FF", "#FF3333"]),
+                legend=alt.Legend(title="Signature Type")
+            ),
+            tooltip=[
+                "pokemon",
+                "times_drafted",
+                "times_available",
+                alt.Tooltip("percent_drafted:Q", format=".0%")
+            ]
+        )
+        .properties(width=800)
+    )
+
+    st.altair_chart(sig_chart)
+
+
     st.write("Charts coming soon:")
     st.write("- Pokémon drafted per patch")
     st.write("- Average spend per patch")
