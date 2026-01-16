@@ -15,10 +15,18 @@ engine = create_engine(DB_PATH)
 def parse_datetime(raw: str) -> datetime:
     raw = raw.strip()
 
+    # Normalize AM/PM variants
+    raw = raw.replace("a.m.", "AM").replace("p.m.", "PM")
+    raw = raw.replace("A.M.", "AM").replace("P.M.", "PM")
+
+    # Remove commas
+    raw = raw.replace(",", "")
+
     formats = [
-        "%d/%m/%Y %H:%M:%S",      # 31/12/2025 18:02:28
-        "%m/%d/%Y %I:%M:%S %p",   # 12/31/2025 6:02:28 PM
-        "%m/%d/%Y %H:%M:%S",      # fallback
+        "%d/%m/%Y %H:%M:%S",  # 31/12/2025 18:02:28
+        "%m/%d/%Y %I:%M:%S %p",  # 12/31/2025 6:02:28 PM
+        "%d/%m/%Y %I:%M:%S %p",  # 31/12/2025 6:02:28 PM
+        "%m/%d/%Y %H:%M:%S",  # fallback
     ]
 
     for fmt in formats:
