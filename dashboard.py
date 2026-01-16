@@ -12,6 +12,8 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "PokemonDraftData.db")
 # Connect to SQLite database
 conn = sqlite3.connect(DB_PATH)
 
+st.set_page_config(page_title="Pokemon Blitz Data Dashboard")
+
 tab_welcome, tab_global, tab_patch, tab_players, tab_appendix = st.tabs([
     "Welcome",
     "All Draft Data",
@@ -333,6 +335,8 @@ with tab_players:
     # --------------------
     df_signature = pd.read_sql_query(SQL_QUERY, conn)
 
+    st.write(df_signature)
+
     # Only show signature picks >= 60%
     df_signature = df_signature[df_signature["percent_drafted"] >= 0.6]
 
@@ -352,6 +356,7 @@ with tab_players:
         else:
             return "Signature"
 
+    
 
     df_player["pick_type"] = df_player.apply(pick_type, axis=1)
 
