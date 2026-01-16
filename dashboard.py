@@ -327,6 +327,7 @@ with tab_players:
                                    ON a.drafted_by = s.drafted_by
                                        AND a.pokemon = s.pokemon
                 WHERE a.times_available >= 3
+                    and percent_drafted >= 0.6
                 ORDER BY a.drafted_by, percent_drafted DESC \
                 """
 
@@ -335,7 +336,6 @@ with tab_players:
     # --------------------
     df_signature = pd.read_sql_query(SQL_QUERY, conn)
 
-    st.write(df_signature)
 
     # Only show signature picks >= 60%
     df_signature = df_signature[df_signature["percent_drafted"] >= 0.6]
@@ -393,6 +393,124 @@ with tab_players:
     )
 
     st.altair_chart(signature_chart)
+
+    st.header("Signature Pokémon Owners")
+
+    SQL_QUERY_SIGNATURE_OWNERS = SQL_QUERY_SIGNATURE_OWNERS = """
+                    WITH player_drafts AS (
+                        -- All drafts each player participated in
+                        SELECT DISTINCT
+                            dp.draft_id,
+                            LOWER(dp.player_name) AS drafted_by
+                        FROM draft_players_v2 dp
+                    ),
+                    
+                    pokemon_seen AS (
+                        -- Pokémon that appeared in drafts a player participated in
+                        SELECT DISTINCT
+                            pd.draft_id,
+                            pl.drafted_by,
+                            pd.pokemon
+                        FROM draft_pokemon_v2 pd
+                        JOIN player_drafts pl
+                            ON pd.draft_id = pl.draft_id
+                    ),
+                    
+                    pokemon_available AS (
+                        -- Times a Pokémon was available to a specific player
+                        SELECT
+                            drafted_by,
+                            pokemon,
+                            COUNT(DISTINCT draft_id) AS times_available
+                        FROM pokemon_seen
+                        GROUP BY drafted_by, pokemon
+                    ),
+                    
+                    pokemon_drafted AS (
+                        -- Times a player drafted a Pokémon (once per draft max)
+                        SELECT
+                            LOWER(drafted_by) AS drafted_by,
+                            pokemon,
+                            COUNT(DISTINCT draft_id) AS times_drafted
+                        FROM draft_pokemon_v2
+                        GROUP BY LOWER(drafted_by), pokemon
+                    ),
+                    
+                    eligible_players AS (
+                        -- Players with at least 3 drafts total
+                        SELECT
+                            LOWER(player_name) AS drafted_by
+                        FROM draft_players_v2
+                        GROUP BY LOWER(player_name)
+                        HAVING COUNT(DISTINCT draft_id) >= 3
+                    ),
+                    
+                    player_rates AS (
+                        SELECT
+                            a.pokemon,
+                            a.drafted_by,
+                            COALESCE(d.times_drafted, 0) AS times_drafted,
+                            a.times_available,
+                            CAST(COALESCE(d.times_drafted, 0) AS FLOAT) / a.times_available AS percent_drafted,
+                            (CAST(COALESCE(d.times_drafted, 0) AS FLOAT) / a.times_available)
+                                * LOG(COALESCE(d.times_drafted, 0) + 1) AS rating
+                        FROM pokemon_available a
+                        LEFT JOIN pokemon_drafted d
+                            ON a.drafted_by = d.drafted_by
+                           AND a.pokemon = d.pokemon
+                        JOIN eligible_players e
+                            ON a.drafted_by = e.drafted_by
+                        WHERE a.times_available >= 3
+                          AND COALESCE(d.times_drafted, 0) >= 2
+                    ),
+                    
+                    ranked_players AS (
+                        SELECT *,
+                               ROW_NUMBER() OVER (
+                                   PARTITION BY pokemon
+                                   ORDER BY rating DESC
+                               ) AS rank_for_pokemon
+                        FROM player_rates
+                    )
+                    
+                    SELECT
+                        pokemon,
+                        drafted_by AS most_likely_player,
+                        times_drafted,
+                        times_available,
+                        percent_drafted,
+                        rating
+                    FROM ranked_players
+                    WHERE rank_for_pokemon = 1
+                    ORDER BY rating DESC;
+                    """
+
+    df_signature_owners = pd.read_sql_query(SQL_QUERY_SIGNATURE_OWNERS, conn)
+
+    # ---- Formatting for display ----
+    df_signature_owners["percent_drafted"] = (
+            df_signature_owners["percent_drafted"] * 100
+    ).round(2)
+
+    df_signature_owners["rating"] = df_signature_owners["rating"].round(3)
+
+    st.markdown(
+        "This table shows **which player is most likely to draft each Pokémon**, "
+        "based on both how often they pick it *when available* and how many total "
+        "times they’ve drafted it."
+    )
+
+    st.dataframe(
+        df_signature_owners.rename(columns={
+            "pokemon": "Pokémon",
+            "most_likely_player": "Most Likely Player",
+            "times_drafted": "Times Drafted",
+            "times_available": "Times Available",
+            "percent_drafted": "Draft Rate (%)",
+            "rating": "Signature Rating"
+        }),
+        use_container_width=True
+    )
 
 
     st.write("Charts coming soon:")
