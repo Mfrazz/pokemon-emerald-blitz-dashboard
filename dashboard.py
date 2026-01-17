@@ -12,7 +12,15 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "PokemonDraftData.db")
 # Connect to SQLite database
 conn = sqlite3.connect(DB_PATH)
 
+
+POKEMON_IMAGE_DIR = "Insert into Database/pokemon-assets/assets/baseforms"
+
 st.set_page_config(page_title="Pokemon Blitz Data Dashboard")
+
+def get_pokemon_image_path(pokemon_name: str) -> str | None:
+    filename = f"{pokemon_name}.png"
+    path = os.path.join(POKEMON_IMAGE_DIR, filename)
+    return path if os.path.exists(path) else None
 
 tab_welcome, tab_global, tab_patch, tab_players, tab_appendix = st.tabs([
     "Welcome",
@@ -408,6 +416,24 @@ with tab_players:
     # Bar chart
     # --------------------
     color_scale = alt.Scale(domain=["Signature", "Super Signature"], range=["#9999FF", "#FF3333"])
+
+    # Show images in the same order as the chart
+    pokemon_list = df_player["pokemon"].tolist()
+
+    cols = st.columns(len(pokemon_list))
+
+    for col, pokemon in zip(cols, pokemon_list):
+        with col:
+            img_path = get_pokemon_image_path(pokemon)
+            if img_path:
+                st.image(img_path, use_container_width=True)
+            else:
+                st.write("🖼️ Missing")
+
+            st.markdown(
+                f"<div style='text-align:center; font-weight:bold'>{pokemon}</div>",
+                unsafe_allow_html=True
+            )
 
     signature_chart = alt.Chart(df_player).mark_bar().encode(
         x=alt.X('pokemon:N', sort=df_player['pokemon'].tolist(), title="Pokémon",
