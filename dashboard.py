@@ -19,19 +19,17 @@ POKEMON_IMAGE_DIR = "pokemon-assets/assets/baseforms"
 
 st.set_page_config(page_title="Pokemon Blitz Data Dashboard")
 
-def get_pokemon_image_path(pokemon_name: str) -> str:
-    """
-    Return the relative path to the Pokémon image suitable for Altair (uses forward slashes)
-    """
-    base_path = "pokemon-assets/assets/baseforms"
-    file_name = f"{pokemon_name}.png"
-    full_path = os.path.join(base_path, file_name)
+def get_pokemon_image(pokemon_name: str) -> str | None:
+    base_path = Path("pokemon-assets/assets/baseforms")
+    img_path = base_path / f"{pokemon_name}.png"
 
-    if os.path.exists(full_path):
-        # Convert backslashes to forward slashes for Altair
-        return full_path.replace("\\", "/")
-    else:
+    if not img_path.exists():
         return None
+
+    with open(img_path, "rb") as f:
+        encoded = base64.b64encode(f.read()).decode("utf-8")
+
+    return f"data:image/png;base64,{encoded}"
 
 
 
@@ -439,10 +437,8 @@ with tab_players:
     color_scale = alt.Scale(domain=["Signature", "Super Signature"], range=["#9999FF", "#FF3333"])
 
     # Ensure each Pokémon has a valid image path
-    df_player["image_path"] = df_player["pokemon"].apply(get_pokemon_image_path)
+    df_player["image"] = df_player["pokemon"].apply(get_pokemon_image)
 
-    # Convert Images to b64
-    df_player["image_b64"] = df_player["image_path"].apply(image_to_base64)
 
     # --------------------
     # Create the Altair bar chart
@@ -486,12 +482,11 @@ with tab_players:
 
     image_chart = alt.Chart(df_player).mark_image(
         width=40,
-        height=40,
-        dy=20
+        height=40
     ).encode(
         x=alt.X('pokemon:N', sort=df_player['pokemon'].tolist()),
-        y=alt.value(-0.05),  # pushes images below x-axis
-        url='image_b64:N',
+        y=alt.value(0),
+        url='image:N',
         tooltip = [
         alt.Tooltip('pokemon:N', title='Pokémon')
     ]
