@@ -3,6 +3,8 @@ import pandas as pd
 import sqlite3
 import altair as alt
 import os
+import base64
+from pathlib import Path
 
 # --------------------
 # Configuration
@@ -13,14 +15,33 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "PokemonDraftData.db")
 conn = sqlite3.connect(DB_PATH)
 
 
-POKEMON_IMAGE_DIR = "Insert into Database/pokemon-assets/assets/baseforms"
+POKEMON_IMAGE_DIR = "pokemon-assets/assets/baseforms"
 
 st.set_page_config(page_title="Pokemon Blitz Data Dashboard")
 
-def get_pokemon_image_path(pokemon_name: str) -> str | None:
-    filename = f"{pokemon_name}.png"
-    path = os.path.join(POKEMON_IMAGE_DIR, filename)
-    return path if os.path.exists(path) else None
+def get_pokemon_image_path(pokemon_name: str) -> str:
+    """
+    Return the relative path to the Pokémon image suitable for Altair (uses forward slashes)
+    """
+    base_path = "pokemon-assets/assets/baseforms"
+    file_name = f"{pokemon_name}.png"
+    full_path = os.path.join(base_path, file_name)
+
+    if os.path.exists(full_path):
+        # Convert backslashes to forward slashes for Altair
+        return full_path.replace("\\", "/")
+    else:
+        return None
+
+
+
+def image_to_base64(path):
+    if not path or not Path(path).exists():
+        return None
+
+    with open(path, "rb") as f:
+        encoded = base64.b64encode(f.read()).decode()
+        return f"data:image/png;base64,{encoded}"
 
 tab_welcome, tab_global, tab_patch, tab_players, tab_appendix = st.tabs([
     "Welcome",
@@ -408,61 +429,84 @@ with tab_players:
         else:
             return "Signature"
 
-    
-
     df_player["pick_type"] = df_player.apply(pick_type, axis=1)
 
     # --------------------
-    # Bar chart
+    # Signature Pokémon Chart with Images
     # --------------------
+
+    # Define color scale
     color_scale = alt.Scale(domain=["Signature", "Super Signature"], range=["#9999FF", "#FF3333"])
 
-    # Show images in the same order as the chart
-    pokemon_list = df_player["pokemon"].tolist()
+    # Ensure each Pokémon has a valid image path
+    df_player["image_path"] = df_player["pokemon"].apply(get_pokemon_image_path)
 
-    cols = st.columns(len(pokemon_list))
+    # Convert Images to b64
+    df_player["image_b64"] = df_player["image_path"].apply(image_to_base64)
 
-    for col, pokemon in zip(cols, pokemon_list):
-        with col:
-            img_path = get_pokemon_image_path(pokemon)
-            if img_path:
-                st.image(img_path, use_container_width=True)
-            else:
-                st.write("🖼️ Missing")
-
-            st.markdown(
-                f"<div style='text-align:center; font-weight:bold'>{pokemon}</div>",
-                unsafe_allow_html=True
+    # --------------------
+    # Create the Altair bar chart
+    # --------------------
+    bar_chart = alt.Chart(df_player).mark_bar().encode(
+        x=alt.X(
+            'pokemon:N',
+            sort=df_player['pokemon'].tolist(),
+            title="Pokémon",
+            axis=alt.Axis(
+                labelFontWeight="bold",
+                labelFontSize=16,
+                labelAngle=-60,
+                titleFontWeight="bold",
+                titleFontSize=18
             )
+        ),
+        y=alt.Y(
+            'percent_drafted:Q',
+            title="Draft Rate",
+            axis=alt.Axis(
+                format=".0%",
+                titleFontWeight="bold",
+                titleFontSize=18
+            )
+        ),
+        color=alt.Color(
+            'pick_type:N',
+            scale=alt.Scale(domain=["Signature", "Super Signature"],
+                            range=["#9999FF", "#FF3333"]),
+            legend=alt.Legend(title="Pick Type")
+        ),
+        tooltip=[
+            'pokemon',
+            'times_drafted',
+            'times_available',
+            alt.Tooltip('percent_drafted:Q', format=".2%"),
+            'pick_type'
+        ]
+    )
 
-    signature_chart = alt.Chart(df_player).mark_bar().encode(
-        x=alt.X('pokemon:N', sort=df_player['pokemon'].tolist(), title="Pokémon",
-        axis=alt.Axis(
-            labelFontWeight="bold",
-            labelFontSize=16,
-            labelAngle=-60,
-            titleFontWeight="bold",
-            titleFontSize=18
-        )),
-        y=alt.Y('percent_drafted:Q', title="Draft Rate",
-        axis=alt.Axis(
-            format=".0%",
-            titleFontWeight="bold",
-            titleFontSize=18
-        )),
-        color=alt.Color('pick_type:N', scale=color_scale, legend=alt.Legend(title="Pick Type")),
-        tooltip=['pokemon',
-                 'times_drafted',
-                 'times_available',
-                 alt.Tooltip('percent_drafted:Q', format=".2%"),
-                 'pick_type']
+    image_chart = alt.Chart(df_player).mark_image(
+        width=40,
+        height=40,
+        dy=20
+    ).encode(
+        x=alt.X('pokemon:N', sort=df_player['pokemon'].tolist()),
+        y=alt.value(-0.05),  # pushes images below x-axis
+        url='image_b64:N',
+        tooltip = [
+        alt.Tooltip('pokemon:N', title='Pokémon')
+    ]
+    )
+
+    signature_chart = (
+            bar_chart + image_chart
     ).properties(
-        width=800,
-        height=400,
+        height=450,
         title=f"Signature Pokémon for {selected_player.title()}"
     )
 
-    st.altair_chart(signature_chart)
+    st.altair_chart(signature_chart, use_container_width=True)
+
+
 
     st.header("Signature Pokémon Owners")
 
