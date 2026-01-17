@@ -15,12 +15,12 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "PokemonDraftData.db")
 conn = sqlite3.connect(DB_PATH)
 
 
-POKEMON_IMAGE_DIR = "pokemon-assets/assets/baseforms"
+POKEMON_IMAGE_DIR = "baseforms"
 
 st.set_page_config(page_title="Pokemon Blitz Data Dashboard")
 
 def get_pokemon_image(pokemon_name: str) -> str | None:
-    base_path = Path("pokemon-assets/assets/baseforms")
+    base_path = Path("baseforms")
     img_path = base_path / f"{pokemon_name}.png"
 
     if not img_path.exists():
