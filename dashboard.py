@@ -105,10 +105,54 @@ with tab_global:
 
     st.altair_chart(avg_pokemon_chart)
 
+    # --------------------
+    # Patch selector for all pokemon average price
+    # --------------------
+    patches = pd.read_sql_query(
+        "SELECT DISTINCT patch FROM draft_event_v2 ORDER BY patch",
+        conn
+    )["patch"].tolist()
+
+    patch_options = ["All Patches"] + patches
+    selected_patch = st.selectbox("Select Patch", patch_options)
+
+    st.subheader("Pokémon Price Summary Across Drafts")
+
+    where_clause = ""
+    params = []
+
+    if selected_patch != "All Patches":
+        where_clause = "WHERE e.patch = ?"
+        params.append(selected_patch)
+
+    SQL_QUERY_POKEMON_PRICE_SUMMARY = f"""
+    SELECT
+        p.pokemon,
+        MIN(p.cost) AS lowest_cost,
+        MAX(p.cost) AS highest_cost,
+        MAX(p.cost) - MIN(p.cost) AS price_variance,
+        COUNT(*) AS times_drafted,
+        ROUND(AVG(p.cost), 2) AS avg_cost
+    FROM draft_pokemon_v2 p
+    JOIN draft_event_v2 e
+        ON p.draft_id = e.id
+    {where_clause}
+    GROUP BY p.pokemon
+    ORDER BY avg_cost DESC
+    """
+
+    df_pokemon_price_summary = pd.read_sql_query(
+        SQL_QUERY_POKEMON_PRICE_SUMMARY,
+        conn,
+        params=params
+    )
+
+    st.dataframe(
+        df_pokemon_price_summary,
+        use_container_width=True
+    )
+
     st.subheader("Other Global Insights (Coming Soon)")
-    st.write("- Most expensive Pokémon ever drafted")
-    st.write("- Most frequently drafted Pokémon")
-    st.write("- Players with the most drafts")
 
     #--------------------
     #Draft Pick Order Visualization
