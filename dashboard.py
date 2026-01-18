@@ -5,6 +5,7 @@ import altair as alt
 import os
 import base64
 from pathlib import Path
+from subprocess import run
 
 # --------------------
 # Configuration
@@ -14,13 +15,14 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "PokemonDraftData.db")
 # Connect to SQLite database
 conn = sqlite3.connect(DB_PATH)
 
+run(["git", "submodule", "update", "--remote"])
 
-POKEMON_IMAGE_DIR = "assets/baseforms"
+POKEMON_IMAGE_DIR = "Pokemon-assets/assets/baseforms"
 
 st.set_page_config(page_title="Pokemon Blitz Data Dashboard")
 
 def get_pokemon_image(pokemon_name: str) -> str | None:
-    base_path = Path("assets/baseforms")
+    base_path = Path("Pokemon-assets/assets/baseforms")
     img_path = base_path / f"{pokemon_name}.png"
 
     if not img_path.exists():
