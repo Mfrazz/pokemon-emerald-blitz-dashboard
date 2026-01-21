@@ -17,6 +17,8 @@ conn = sqlite3.connect(DB_PATH)
 
 POKEMON_IMAGE_DIR = "assets/baseforms"
 
+logo_path = Path("assets/blitzlogo.png")
+
 st.set_page_config(page_title="Pokemon Blitz Data Dashboard")
 
 def get_pokemon_image(pokemon_name: str) -> str | None:
@@ -41,6 +43,34 @@ def image_to_base64(path):
         encoded = base64.b64encode(f.read()).decode()
         return f"data:image/png;base64,{encoded}"
 
+def add_pokemon_images(
+    base_chart: alt.Chart,
+    df: pd.DataFrame,
+    *,
+    image_size: int = 40,
+    y_offset: float = 0,
+):
+    """
+    Adds Pokémon images aligned to the x-axis categories of a bar chart.
+    """
+
+    image_chart = alt.Chart(df).mark_image(
+        width=image_size,
+        height=image_size
+    ).encode(
+        x=alt.X(
+            'pokemon:N',
+            sort=df['pokemon'].tolist()
+        ),
+        y=alt.value(y_offset),
+        url='image:N',
+        tooltip=[
+            alt.Tooltip('pokemon:N', title='Pokémon')
+        ]
+    )
+
+    return base_chart + image_chart
+
 tab_welcome, tab_global, tab_patch, tab_players, tab_appendix = st.tabs([
     "Welcome",
     "All Draft Data",
@@ -52,10 +82,51 @@ tab_welcome, tab_global, tab_patch, tab_players, tab_appendix = st.tabs([
 #Add all information for Welcome tab here
 
 with tab_welcome:
-    st.title("Pokémon Emerald Blitz Dashboard")
+
+    bg_image = image_to_base64(logo_path)
+
+    st.markdown(
+        f"""
+        <style>
+        .hero {{
+            width: 100%;
+            height: 60vh;
+            background-image: url("{bg_image}");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+        }}
+
+        .hero-text {{
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            text-shadow:
+                0 2px 4px rgba(0,0,0,0.8),
+                0 4px 12px rgba(0,0,0,0.6);
+        }}
+        </style>
+
+        <div class="hero">
+            <div class="hero-text">
+                Welcome to the <strong>Pokémon Emerald Blitz Draft Dashboard</strong>!
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    # st.title("Pokémon Emerald Blitz Dashboard")
+
 
     st.markdown("""
-    Welcome to the **Pokémon Emerald Blitz Draft Dashboard**!
 
     This dashboard provides insights into:
     - Draft trends across all time
@@ -64,11 +135,12 @@ with tab_welcome:
     - Full access to the underlying data
     """)
 
+
     st.subheader("Links")
     st.markdown("""
-    - 💬 [Discord](https://discord.gg/YOUR_LINK_HERE)
-    - 📄 Rules & Format (link coming soon)
-    - 📊 GitHub Repository (optional)
+    - 💬 [Discord](https://discord.com/invite/CsUSZ5UhzW)
+    - Full Draft Website (https://auction.emeraldblitz.workers.dev)
+    - 📊 GitHub Repository (https://github.com/Mfrazz/pokemon-emerald-blitz-dashboard)
     """)
 
     st.info("Use the tabs above to explore the data.")
@@ -487,9 +559,9 @@ with tab_players:
         x=alt.X('pokemon:N', sort=df_player['pokemon'].tolist()),
         y=alt.value(0),
         url='image:N',
-        tooltip = [
-        alt.Tooltip('pokemon:N', title='Pokémon')
-    ]
+        tooltip=[
+            alt.Tooltip('pokemon:N', title='Pokémon')
+        ]
     )
 
     signature_chart = (
@@ -500,8 +572,6 @@ with tab_players:
     )
 
     st.altair_chart(signature_chart, use_container_width=True)
-
-
 
     st.header("Signature Pokémon Owners")
 
@@ -621,12 +691,6 @@ with tab_players:
         use_container_width=True
     )
 
-
-    st.write("Charts coming soon:")
-    st.write("- Pokémon drafted per patch")
-    st.write("- Average spend per patch")
-    st.write("- Signature Pokémon")
-
     st.header("Player Draft Value vs Global Average (All Patches)")
     st.write("This graph shows the top 10 largest differences between what a player pays and what the average"
              "price of each Pokemon is across all drafts. The player must have drafted the Pokemon at least 2 times.")
@@ -691,7 +755,12 @@ with tab_players:
     # Re-sort for diverging bar chart display
     df_player = df_player.sort_values("delta")
 
-    chart = alt.Chart(df_player).mark_bar().encode(
+    # Ensure each Pokémon has a valid image path
+    df_player["image"] = df_player["pokemon"].apply(get_pokemon_image)
+
+
+
+    bar_chart = alt.Chart(df_player).mark_bar().encode(
         x=alt.X("pokemon:N", sort=df_player["pokemon"].tolist(),
                 title="Pokémon",
                 axis=alt.Axis(
@@ -725,11 +794,30 @@ with tab_players:
         title=f"{selected_player}: Draft Behavior vs Global Average"
     )
 
+    image_chart = alt.Chart(df_player).mark_image(
+        width=40,
+        height=40
+    ).encode(
+        x=alt.X('pokemon:N', sort=df_player['pokemon'].tolist()),
+        y=alt.value(0),
+        url='image:N',
+        tooltip=[
+            alt.Tooltip('pokemon:N', title='Pokémon')
+        ]
+    )
+
+    draft_behavior_chart = (
+            bar_chart + image_chart
+    ).properties(
+        height=450,
+        title=f"Signature Pokémon for {selected_player.title()}"
+    )
+
     zero_line = alt.Chart(
         pd.DataFrame({"y": [0]})
     ).mark_rule(color="black").encode(y="y:Q")
 
-    st.altair_chart(chart + zero_line, use_container_width=True)
+    st.altair_chart(draft_behavior_chart + zero_line, use_container_width=True)
 
 
 
