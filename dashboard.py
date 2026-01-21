@@ -71,10 +71,10 @@ def add_pokemon_images(
 
     return base_chart + image_chart
 
-tab_welcome, tab_global, tab_patch, tab_players, tab_appendix = st.tabs([
+tab_welcome, tab_game_stats, tab_global, tab_players, tab_appendix = st.tabs([
     "Welcome",
+    "Overall Game Stats",
     "All Draft Data",
-    "Patch Trends",
     "Player Data",
     "Appendix"
 ])
@@ -144,6 +144,124 @@ with tab_welcome:
     """)
 
     st.info("Use the tabs above to explore the data.")
+
+with tab_game_stats:
+    # --------------------
+    # Overall Game Stats Tab
+    # --------------------
+    st.header("Overall Game Stats")
+    st.markdown(
+        """
+        High-level overview of the Pokémon Emerald Blitz game.
+        \n(Work in Progress)
+        """
+    )
+
+    # --------------------
+    # Total unique players
+    # --------------------
+    total_players = pd.read_sql_query(
+        "SELECT COUNT(DISTINCT player_name) AS total_players FROM draft_players_v2",
+        conn
+    )["total_players"].iloc[0]
+
+    # --------------------
+    # Total Pokémon drafted
+    # --------------------
+    total_pokemon_drafted = pd.read_sql_query(
+        "SELECT COUNT(*) AS total_drafted FROM draft_pokemon_v2",
+        conn
+    )["total_drafted"].iloc[0]
+
+    # --------------------
+    # Drafts per day
+    # --------------------
+    drafts_per_day = pd.read_sql_query(
+        """
+        SELECT date (date_time) AS draft_date, COUNT (*) AS drafts_count
+        FROM draft_event_v2
+        GROUP BY draft_date
+        ORDER BY draft_date
+        """,
+        conn
+    )
+
+    avg_drafts_per_day = drafts_per_day["drafts_count"].mean()
+
+    # --------------------
+    # Player with most drafts in a single day
+    # --------------------
+    most_drafts_day = pd.read_sql_query(
+        """
+        SELECT dp.player_name, date (de.date_time) AS draft_date, COUNT (*) AS drafts_count
+        FROM draft_players_v2 dp
+            JOIN draft_event_v2 de
+        ON dp.draft_id = de.id
+        GROUP BY dp.player_name, draft_date
+        ORDER BY drafts_count DESC
+            LIMIT 1
+        """,
+        conn
+    )
+
+    # --------------------
+    # Display metrics
+    # --------------------
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Unique Players", total_players)
+    col2.metric("Total Pokémon Drafted", total_pokemon_drafted)
+    col3.metric("Average Drafts Per Day", f"{avg_drafts_per_day:.2f}")
+
+    st.markdown("---")
+
+    st.subheader("Record Drafts in a Single Day")
+    st.write(
+        f"{most_drafts_day.iloc[0]['player_name']} drafted "
+        f"{most_drafts_day.iloc[0]['drafts_count']} times on {most_drafts_day.iloc[0]['draft_date']}"
+    )
+
+    # --------------------
+    # Longest Streak of Drafts (at least 1 draft/day)
+    # --------------------
+    # Query all draft dates per player
+    draft_dates = pd.read_sql_query(
+        """
+        SELECT dp.player_name, date (de.date_time) AS draft_date
+        FROM draft_players_v2 dp
+            JOIN draft_event_v2 de
+        ON dp.draft_id = de.id
+        GROUP BY dp.player_name, draft_date
+        ORDER BY dp.player_name, draft_date
+        """,
+        conn
+    )
+
+
+    # Function to calculate the longest streak per player
+    def longest_streak(dates):
+        dates = pd.to_datetime(dates).sort_values()
+        streaks = []
+        current_streak = 1
+        for i in range(1, len(dates)):
+            if (dates.iloc[i] - dates.iloc[i - 1]).days == 1:
+                current_streak += 1
+            else:
+                streaks.append(current_streak)
+                current_streak = 1
+        streaks.append(current_streak)
+        return max(streaks)
+
+
+    # Calculate longest streaks per player
+    streaks = (
+        draft_dates.groupby("player_name")["draft_date"]
+        .apply(longest_streak)
+        .reset_index(name="longest_streak")
+        .sort_values("longest_streak", ascending=False)
+    )
+
+    st.subheader("Longest Draft Streaks (1 draft/day)")
+    st.dataframe(streaks.head(10), use_container_width=True)
 
 #tab for all data across all patches
 
@@ -356,73 +474,6 @@ with tab_global:
     )
 
     st.altair_chart(chart, use_container_width=True)
-
-#tab for patch specific data
-
-with tab_patch:
-    st.header("Patch-Based Draft Trends")
-
-    st.markdown("""
-    Analyze how draft behavior changes between patches.
-    """)
-
-    # NEW CHART: AVERAGE COST PER POKEMON BY PATCH
-
-    # Get list of patches from draft_event_v2
-    patches = pd.read_sql_query("""
-                                SELECT DISTINCT patch
-                                FROM draft_event_v2
-                                ORDER BY patch
-                                """, conn)['patch'].tolist()
-
-    # Streamlit UI
-    st.header("Average Cost per Pokémon by Patch")
-    st.write("Shows the average draft price of each Pokémon and how often it was drafted, filtered by patch.")
-
-    # Patch selector
-    selected_patch = st.selectbox("Select Patch", patches)
-
-    # Pull Pokémon data for the selected patch
-    df_avg_pokemon_patch = pd.read_sql_query(f"""
-        SELECT dp.pokemon,
-               ROUND(AVG(dp.cost), 2) AS avg_cost,
-               COUNT(*) AS times_drafted
-        FROM draft_pokemon_v2 dp
-        JOIN draft_event_v2 de ON dp.draft_id = de.id
-        WHERE de.patch = '{selected_patch}'
-        GROUP BY dp.pokemon
-    """, conn)
-
-    # Top/Bottom selector
-    filter_type_patch = st.radio(f"Show Top or Bottom Pokémon by Average Cost ({selected_patch})", ("Top", "Bottom"))
-    x_patch = st.number_input(f"How many Pokémon to show for {selected_patch}?",
-                              min_value=1, max_value=len(df_avg_pokemon_patch), value=10, key="patch_num")
-
-    # Sort data based on Top or Bottom
-    df_avg_pokemon_patch_sorted = df_avg_pokemon_patch.sort_values(
-        by='avg_cost',
-        ascending=(filter_type_patch == "Bottom")  # Bottom = ascending, Top = descending
-    )
-
-    # Take top/bottom X Pokémon
-    df_avg_pokemon_patch_filtered = df_avg_pokemon_patch_sorted.head(x_patch)
-
-    # Altair color scale (light blue → dark blue)
-    color_scale_patch = alt.Scale(
-        domain=[df_avg_pokemon_patch_filtered['times_drafted'].min(),
-                df_avg_pokemon_patch_filtered['times_drafted'].max()],
-        range=['#9999FF', '#000099']  # light blue → dark blue
-    )
-
-    # Create bar chart
-    avg_pokemon_patch_chart = alt.Chart(df_avg_pokemon_patch_filtered).mark_bar().encode(
-        x=alt.X('pokemon:N', sort=df_avg_pokemon_patch_filtered['pokemon'].tolist()),
-        y='avg_cost:Q',
-        color=alt.Color('times_drafted:Q', scale=color_scale_patch, legend=alt.Legend(title="Times Drafted")),
-        tooltip=['pokemon', 'avg_cost', 'times_drafted']
-    ).properties(width=1000)
-
-    st.altair_chart(avg_pokemon_patch_chart)
 
 with tab_players:
     st.header("Player Data by Patch")
