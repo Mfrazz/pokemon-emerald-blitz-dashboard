@@ -71,6 +71,23 @@ def add_pokemon_images(
 
     return base_chart + image_chart
 
+def remove_price_outliers_per_pokemon(df, value_col="cost", group_col="pokemon", k=2.0):
+    def filter_group(group):
+        q1 = group[value_col].quantile(0.25)
+        q3 = group[value_col].quantile(0.75)
+        iqr = q3 - q1
+
+        lower = q1 - k * iqr
+        upper = q3 + k * iqr
+
+        return group[
+            (group[value_col] >= lower) &
+            (group[value_col] <= upper)
+        ]
+
+    return df.groupby(group_col, group_keys=False).apply(filter_group)
+
+
 tab_welcome, tab_game_stats, tab_global, tab_players, tab_appendix = st.tabs([
     "Welcome",
     "Overall Game Stats",
@@ -291,15 +308,17 @@ with tab_global:
         params.append(selected_patch_cost_chart)
 
     # Query Pokémon cost data
-    df_avg_pokemon_patch = pd.read_sql_query(f"""
-        SELECT dp.pokemon,
-               ROUND(AVG(dp.cost), 2) AS avg_cost,
-               COUNT(*) AS times_drafted
+    df_raw = pd.read_sql_query(f"""
+        SELECT
+            dp.pokemon,
+            dp.cost
         FROM draft_pokemon_v2 dp
         JOIN draft_event_v2 de ON dp.draft_id = de.id
         {where_clause}
-        GROUP BY dp.pokemon
     """, conn, params=params)
+
+    #removes outliers in average cost dataset
+    df_filtered = remove_price_outliers_per_pokemon(df_raw)
 
     # Top/Bottom selector
     filter_type_patch = st.radio(
@@ -307,6 +326,18 @@ with tab_global:
         ("Top", "Bottom"),
         key="top_bottom_patch"
     )
+
+    df_avg_pokemon_patch = (
+        df_filtered
+        .groupby("pokemon")
+        .agg(
+            avg_cost=("cost", "mean"),
+            times_drafted=("cost", "count")
+        )
+        .reset_index()
+    )
+
+    df_avg_pokemon_patch["avg_cost"] = df_avg_pokemon_patch["avg_cost"].round(2)
 
     x_patch = st.number_input(
         f"How many Pokémon to show for {selected_patch_cost_chart}?",
@@ -360,17 +391,52 @@ with tab_global:
         params_summary.append(selected_patch_summary)
 
     SQL_QUERY_POKEMON_PRICE_SUMMARY = f"""
+    WITH ranked AS (
+        SELECT
+            p.pokemon,
+            p.cost,
+            ROW_NUMBER() OVER (
+                PARTITION BY p.pokemon
+                ORDER BY p.cost
+            ) AS rn,
+            COUNT(*) OVER (
+                PARTITION BY p.pokemon
+            ) AS cnt
+        FROM draft_pokemon_v2 p
+        JOIN draft_event_v2 e
+            ON p.draft_id = e.id
+        {where_clause_summary}
+    ),
+    iqr_calc AS (
+        SELECT
+            pokemon,
+            MAX(CASE WHEN rn = CAST(cnt * 0.25 AS INT) THEN cost END) AS q1,
+            MAX(CASE WHEN rn = CAST(cnt * 0.75 AS INT) THEN cost END) AS q3
+        FROM ranked
+        GROUP BY pokemon
+    ),
+    filtered AS (
+        SELECT
+            r.pokemon,
+            r.cost
+        FROM ranked r
+        JOIN iqr_calc i
+            ON r.pokemon = i.pokemon
+        WHERE
+            r.cost BETWEEN
+            (i.q1 - 2.0 * (i.q3 - i.q1))
+            AND
+            (i.q3 + 2.0 * (i.q3 - i.q1))
+    )
     SELECT
-        p.pokemon,
-        MIN(p.cost) AS lowest_cost,
-        MAX(p.cost) AS highest_cost,
-        MAX(p.cost) - MIN(p.cost) AS price_variance,
+        pokemon,
+        MIN(cost) AS lowest_cost,
+        MAX(cost) AS highest_cost,
+        MAX(cost) - MIN(cost) AS price_variance,
         COUNT(*) AS times_drafted,
-        ROUND(AVG(p.cost), 2) AS avg_cost
-    FROM draft_pokemon_v2 p
-    JOIN draft_event_v2 e ON p.draft_id = e.id
-    {where_clause_summary}
-    GROUP BY p.pokemon
+        ROUND(AVG(cost), 2) AS avg_cost
+    FROM filtered
+    GROUP BY pokemon
     ORDER BY avg_cost DESC
     """
 
