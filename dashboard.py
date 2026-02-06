@@ -440,11 +440,46 @@ with tab_global:
     ORDER BY avg_cost DESC
     """
 
+
+    def avg_cost_color(val):
+        if pd.isna(val):
+            return ""
+
+        band = int(val // 1000)
+
+        colors = [
+            "#9467bd",  # 0–999
+            "#1f77b4",  # 1000–1999
+            "#2ca02c",  # 2000–2999
+            "#ff7f0e",  # 3000–3999
+            "#d62728",  # 4000–4999
+            "#d62728",  # 5000–5999
+            "#d62728",  # 6000–6999
+            "#d62728",  # 7000–7999
+            "#d62728",  # 8000–8999
+            "#d62728",  # 9000+
+        ]
+
+        return f"background-color: {colors[min(band, len(colors) - 1)]} "
+
     df_pokemon_price_summary = pd.read_sql_query(SQL_QUERY_POKEMON_PRICE_SUMMARY, conn, params=params_summary)
     df_pokemon_price_summary = df_pokemon_price_summary.reset_index(drop=True)
     df_pokemon_price_summary.insert(0, "Rank", df_pokemon_price_summary.index + 1)
 
-    st.dataframe(df_pokemon_price_summary, use_container_width=True, hide_index=True)
+    styled_df = (
+        df_pokemon_price_summary
+        .style
+        .applymap(avg_cost_color, subset=["avg_cost"])
+        .format({
+            "avg_cost": "{:,.0f}",
+            "lowest_cost": "{:,.0f}",
+            "highest_cost": "{:,.0f}",
+            "price_variance": "{:,.0f}"
+        })
+    )
+
+
+    st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
 
     #--------------------
