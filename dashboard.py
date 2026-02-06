@@ -441,8 +441,10 @@ with tab_global:
     """
 
     df_pokemon_price_summary = pd.read_sql_query(SQL_QUERY_POKEMON_PRICE_SUMMARY, conn, params=params_summary)
+    df_pokemon_price_summary = df_pokemon_price_summary.reset_index(drop=True)
+    df_pokemon_price_summary.insert(0, "Rank", df_pokemon_price_summary.index + 1)
 
-    st.dataframe(df_pokemon_price_summary, use_container_width=True)
+    st.dataframe(df_pokemon_price_summary, use_container_width=True, hide_index=True)
 
 
     #--------------------
