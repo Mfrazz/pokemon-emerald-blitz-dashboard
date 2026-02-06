@@ -296,7 +296,7 @@ with tab_global:
     # --------------------
     st.header("Average Cost per Pokémon by Patch")
     st.write("Shows the average draft price of each Pokémon and how often it was drafted, filtered by patch.")
-    st.write("*Note* Outliers have been removed from Avg Cost Views")
+    st.write("*Note Outliers have been removed from Avg Cost Views*")
 
     selected_patch_cost_chart = st.selectbox("Select Patch for Average Cost Chart", patch_options, key="avg_cost_patch")
 
