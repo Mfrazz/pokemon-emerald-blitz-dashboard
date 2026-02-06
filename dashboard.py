@@ -71,7 +71,9 @@ def add_pokemon_images(
 
     return base_chart + image_chart
 
-def remove_price_outliers_per_pokemon(df, value_col="cost", group_col="pokemon", k=2.0, j=1.4):
+def remove_price_outliers_per_pokemon(df, value_col="cost", group_col="pokemon", k=2.0, j=1.5):
+    df[value_col] = pd.to_numeric(df[value_col], errors='coerce')  # force numeric
+
     def filter_group(group):
         q1 = group[value_col].quantile(0.25)
         q3 = group[value_col].quantile(0.75)
@@ -80,10 +82,7 @@ def remove_price_outliers_per_pokemon(df, value_col="cost", group_col="pokemon",
         lower = q1 - j * iqr
         upper = q3 + k * iqr
 
-        return group[
-            (group[value_col] >= lower) &
-            (group[value_col] <= upper)
-        ]
+        return group[(group[value_col] >= lower) & (group[value_col] <= upper)]
 
     return df.groupby(group_col, group_keys=False).apply(filter_group)
 
@@ -424,7 +423,7 @@ with tab_global:
             ON r.pokemon = i.pokemon
         WHERE
             r.cost BETWEEN
-            (i.q1 - 2.0 * (i.q3 - i.q1))
+            (i.q1 - 1.5 * (i.q3 - i.q1))
             AND
             (i.q3 + 2.0 * (i.q3 - i.q1))
     )
