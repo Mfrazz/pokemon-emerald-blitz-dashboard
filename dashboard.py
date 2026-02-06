@@ -71,7 +71,7 @@ def add_pokemon_images(
 
     return base_chart + image_chart
 
-def remove_price_outliers_per_pokemon(df, value_col="cost", group_col="pokemon", k=2.0, j=1.5):
+def remove_price_outliers_per_pokemon(df, value_col="cost", group_col="pokemon", k=2.0, j=1.4):
     def filter_group(group):
         q1 = group[value_col].quantile(0.25)
         q3 = group[value_col].quantile(0.75)
