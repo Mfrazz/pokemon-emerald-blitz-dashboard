@@ -304,6 +304,9 @@ with tab_global:
 
         return f"background-color: {colors[min(band, len(colors) - 1)]} "
 
+
+    MIN_APPEARANCES = 4
+
     st.header("Patch-Based Draft Trends")
     st.markdown("Analyze how draft behavior changes between patches.")
 
@@ -318,7 +321,10 @@ with tab_global:
     # --------------------
     st.header("Average Cost per Pokémon by Patch")
     st.write("Shows the average draft price of each Pokémon and how often it was drafted, filtered by patch.")
-    st.write("*Outliers have been removed from avg cost views*")
+    st.caption("*Outliers have been removed from avg cost views*")
+    st.caption("*Pokémon drafted 3 times or fewer are excluded to avoid low-sample bias.*")
+
+
 
     selected_patch_cost_chart = st.selectbox("Select Patch for Average Cost Chart", patch_options, key="avg_cost_patch")
 
@@ -341,6 +347,18 @@ with tab_global:
         {where_clause}
     """, conn, params=params)
 
+    df_raw["times_drafted"] = (
+        df_raw
+        .groupby("pokemon")["cost"]
+        .transform("count")
+    )
+
+    df_raw = df_raw[
+        df_raw["times_drafted"] >= MIN_APPEARANCES
+        ]
+
+    df_raw = df_raw.drop(columns="times_drafted")
+
     #removes outliers in average cost dataset
     df_filtered = remove_price_outliers_per_pokemon(df_raw)
 
@@ -351,6 +369,7 @@ with tab_global:
         key="top_bottom_patch"
     )
 
+
     df_avg_pokemon_patch = (
         df_filtered
         .groupby("pokemon")
@@ -360,6 +379,8 @@ with tab_global:
         )
         .reset_index()
     )
+
+
 
     df_avg_pokemon_patch["avg_cost"] = df_avg_pokemon_patch["avg_cost"].round(2)
 
@@ -428,6 +449,19 @@ with tab_global:
         conn,
         params=params_summary
     )
+
+    df_raw_prices["times_drafted"] = (
+        df_raw
+        .groupby("pokemon")["cost"]
+        .transform("count")
+    )
+
+    df_raw_prices = df_raw_prices[
+        df_raw_prices["times_drafted"] >= MIN_APPEARANCES
+        ]
+
+    df_raw_prices = df_raw_prices.drop(columns="times_drafted")
+
 
     df_filtered_prices = remove_price_outliers_per_pokemon(
         df_raw_prices
