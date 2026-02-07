@@ -282,6 +282,28 @@ with tab_game_stats:
 #tab for all data across all patches
 
 with tab_global:
+
+    def avg_cost_color(val):
+        if pd.isna(val):
+            return ""
+
+        band = int(val // 1000)
+
+        colors = [
+            "#9467bd",  # 0–999
+            "#1f77b4",  # 1000–1999
+            "#2ca02c",  # 2000–2999
+            "#ff7f0e",  # 3000–3999
+            "#d62728",  # 4000–4999
+            "#d62728",  # 5000–5999
+            "#d62728",  # 6000–6999
+            "#d62728",  # 7000–7999
+            "#d62728",  # 8000–8999
+            "#d62728",  # 9000+
+        ]
+
+        return f"background-color: {colors[min(band, len(colors) - 1)]} "
+
     st.header("Patch-Based Draft Trends")
     st.markdown("Analyze how draft behavior changes between patches.")
 
@@ -299,6 +321,8 @@ with tab_global:
     st.write("*Outliers have been removed from avg cost views*")
 
     selected_patch_cost_chart = st.selectbox("Select Patch for Average Cost Chart", patch_options, key="avg_cost_patch")
+
+
 
     # Build WHERE clause for SQL
     where_clause = ""
@@ -386,83 +410,44 @@ with tab_global:
 
     where_clause_summary = ""
     params_summary = []
+
     if selected_patch_summary != "All Patches":
         where_clause_summary = "WHERE e.patch = ?"
         params_summary.append(selected_patch_summary)
 
-    SQL_QUERY_POKEMON_PRICE_SUMMARY = f"""
-    WITH ranked AS (
+    df_raw_prices = pd.read_sql_query(
+        f"""
         SELECT
             p.pokemon,
-            p.cost,
-            ROW_NUMBER() OVER (
-                PARTITION BY p.pokemon
-                ORDER BY p.cost
-            ) AS rn,
-            COUNT(*) OVER (
-                PARTITION BY p.pokemon
-            ) AS cnt
+            p.cost
         FROM draft_pokemon_v2 p
         JOIN draft_event_v2 e
             ON p.draft_id = e.id
         {where_clause_summary}
-    ),
-    iqr_calc AS (
-        SELECT
-            pokemon,
-            MAX(CASE WHEN rn = CAST(cnt * 0.25 AS INT) THEN cost END) AS q1,
-            MAX(CASE WHEN rn = CAST(cnt * 0.75 AS INT) THEN cost END) AS q3
-        FROM ranked
-        GROUP BY pokemon
-    ),
-    filtered AS (
-        SELECT
-            r.pokemon,
-            r.cost
-        FROM ranked r
-        JOIN iqr_calc i
-            ON r.pokemon = i.pokemon
-        WHERE
-            r.cost BETWEEN
-            (i.q1 - 1.5 * (i.q3 - i.q1))
-            AND
-            (i.q3 + 2.0 * (i.q3 - i.q1))
+        """,
+        conn,
+        params=params_summary
     )
-    SELECT
-        pokemon,
-        MIN(cost) AS lowest_cost,
-        MAX(cost) AS highest_cost,
-        MAX(cost) - MIN(cost) AS price_variance,
-        COUNT(*) AS times_drafted,
-        ROUND(AVG(cost), 2) AS avg_cost
-    FROM filtered
-    GROUP BY pokemon
-    ORDER BY avg_cost DESC
-    """
 
+    df_filtered_prices = remove_price_outliers_per_pokemon(
+        df_raw_prices
+    )
 
-    def avg_cost_color(val):
-        if pd.isna(val):
-            return ""
+    df_pokemon_price_summary = (
+        df_filtered_prices
+        .groupby("pokemon", as_index=False)
+        .agg(
+            lowest_cost=("cost", "min"),
+            highest_cost=("cost", "max"),
+            price_variance=("cost", lambda x: x.max() - x.min()),
+            times_drafted=("cost", "count"),
+            avg_cost=("cost", "mean")
+        )
+        .sort_values("avg_cost", ascending=False)
+    )
 
-        band = int(val // 1000)
+    df_pokemon_price_summary["avg_cost"] = df_pokemon_price_summary["avg_cost"].round(2)
 
-        colors = [
-            "#9467bd",  # 0–999
-            "#1f77b4",  # 1000–1999
-            "#2ca02c",  # 2000–2999
-            "#ff7f0e",  # 3000–3999
-            "#d62728",  # 4000–4999
-            "#d62728",  # 5000–5999
-            "#d62728",  # 6000–6999
-            "#d62728",  # 7000–7999
-            "#d62728",  # 8000–8999
-            "#d62728",  # 9000+
-        ]
-
-        return f"background-color: {colors[min(band, len(colors) - 1)]} "
-
-    df_pokemon_price_summary = pd.read_sql_query(SQL_QUERY_POKEMON_PRICE_SUMMARY, conn, params=params_summary)
     df_pokemon_price_summary = df_pokemon_price_summary.reset_index(drop=True)
     df_pokemon_price_summary.insert(0, "Rank", df_pokemon_price_summary.index + 1)
 
@@ -471,7 +456,7 @@ with tab_global:
         .style
         .applymap(avg_cost_color, subset=["avg_cost"])
         .format({
-            "avg_cost": "{:,.0f}",
+            "avg_cost": "{:,.2f}",
             "lowest_cost": "{:,.0f}",
             "highest_cost": "{:,.0f}",
             "price_variance": "{:,.0f}"
