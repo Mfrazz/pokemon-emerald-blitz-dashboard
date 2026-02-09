@@ -27,7 +27,8 @@ def parse_datetime(raw: str) -> datetime:
         "%m/%d/%Y %I:%M:%S %p",  # 12/31/2025 6:02:28 PM
         "%d/%m/%Y %I:%M:%S %p",  # 31/12/2025 6:02:28 PM
         "%m/%d/%Y %H:%M:%S",  # fallback
-        "%m.%d.%Y %H:%M:%S" #with dots
+        "%m.%d.%Y %H:%M:%S", #with dots
+        "%d/%m/%Y %H:%M:%S %p" #Military time with PM
     ]
 
     for fmt in formats:
