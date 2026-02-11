@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Matt/Documents/Pokemon With Friends/Python Projects/Insert into Database/PokemonDraftData.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1886"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="all_draft_csv_with_website" custom_title="0" dock_id="1" table="4,26:mainall_draft_csv_with_website"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011900ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="all_draft_csv_with_website" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="296"/><column index="2" value="300"/><column index="3" value="39"/><column index="4" value="210"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">WITH ranked AS (
+    SELECT
+        pokemon,
+        cost,
+        ROW_NUMBER() OVER (PARTITION BY pokemon ORDER BY cost) AS rn,
+        COUNT(*) OVER (PARTITION BY pokemon) AS cnt
+    FROM draft_pokemon_v2
+),
+iqr_calc AS (
+    SELECT
+        pokemon,
+        MAX(CASE WHEN rn = CAST(cnt * 0.25 AS INT) THEN cost END) AS q1,
+        MAX(CASE WHEN rn = CAST(cnt * 0.75 AS INT) THEN cost END) AS q3
+    FROM ranked
+    GROUP BY pokemon
+),
+bounds AS (
+    SELECT
+        pokemon,
+        (q1 - 1.5 * (q3 - q1)) AS lower_bound,
+        (q3 + 1.5 * (q3 - q1)) AS upper_bound
+    FROM iqr_calc
+)
+SELECT
+    d.pokemon,
+    ROUND(AVG(d.cost), 2) AS avg_before,
+    ROUND(AVG(
+        CASE
+            WHEN d.cost BETWEEN b.lower_bound AND b.upper_bound
+            THEN d.cost
+        END
+    ), 2) AS avg_after,
+	ROUND(AVG(d.cost), 2) - ROUND(AVG(
+        CASE
+            WHEN d.cost BETWEEN b.lower_bound AND b.upper_bound
+            THEN d.cost
+        END
+    ), 2) AS DIFFERENCE
+FROM draft_pokemon_v2 d
+JOIN bounds b ON d.pokemon = b.pokemon
+--WHERE d.pokemon = 'Drilbur'
+GROUP BY d.pokemon
+ORDER BY DIFFERENCE;
+
+WITH ranked AS (
+    SELECT
+        pokemon,
+        cost,
+        ROW_NUMBER() OVER (PARTITION BY pokemon ORDER BY cost) AS rn,
+        COUNT(*) OVER (PARTITION BY pokemon) AS cnt
+    FROM draft_pokemon_v2
+),
+iqr_calc AS (
+    SELECT
+        pokemon,
+        MAX(CASE WHEN rn = CAST(cnt * 0.25 AS INT) THEN cost END) AS q1,
+        MAX(CASE WHEN rn = CAST(cnt * 0.75 AS INT) THEN cost END) AS q3
+    FROM ranked
+    GROUP BY pokemon
+),
+bounds AS (
+    SELECT
+        pokemon,
+        q1,
+        q3,
+        (q1 - 1.5 * (q3 - q1)) AS lower_bound,
+        (q3 + 1.5 * (q3 - q1)) AS upper_bound
+    FROM iqr_calc
+)
+SELECT
+    d.pokemon,
+    d.cost,
+    b.lower_bound,
+    b.upper_bound,
+    CASE
+        WHEN d.cost &lt; b.lower_bound OR d.cost &gt; b.upper_bound
+        THEN 'OUTLIER'
+        ELSE 'KEPT'
+    END AS status
+FROM draft_pokemon_v2 d
+JOIN bounds b ON d.pokemon = b.pokemon
+WHERE d.pokemon like '%car%'
+ORDER BY d.cost;
+
+Select * from draft_pokemon_v2 where drafted_by = 'Mfrazz'</sql><current_tab id="0"/></tab_sql></sqlb_project>
