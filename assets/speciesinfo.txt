@@ -112,12 +112,27 @@ Key Moves:
    Zen Headbutt (32)
    Meteor Mash (44)
 
+Bibarel
+Key Moves:
+   Defense Curl (5)
+   Rollout (9)
+   Headbutt (13)
+   Water Gun (Evo.)
+   Hyper Fang (18)
+   Yawn (23)
+   Crunch (28)
+   Waterfall (HM)
+   Super Fang (38)
+   Curse (58)
+   Aqua Tail (Egg)
+
 Blitzle
 Key Moves:
    Charge (8)
    Shock Wave (11)
    Flame Charge (18)
    Spark (25)
+   Stomp (Evo.)
    Thunder (TM)
    Discharge (36)
    Overheat (TM)
@@ -130,7 +145,7 @@ Key Moves:
    Confusion (Evo.)
    Light Screen (Evo.)
    Reflect (Evo.)
-   Bug Buzz (MR)
+   Bug Buzz (Evo.**)
    Giga Drain (TM)
    Mirror Coat (32)
    Psychic (36)
@@ -178,7 +193,8 @@ Key Moves:
    Growth (4)
    Giga Drain (25)
    Toxic Spikes (28)
-   Leech Seed (MR*)
+   Leech Seed (MR)
+   Mortal Spin (MR)
    Sludge Bomb (TM)
    Dazzling Gleam (TM)
    Spikes (Egg)
@@ -207,6 +223,7 @@ Key Moves:
    Sky Uppercut (Egg)
 
 Bulbasaur
+Key Moves:
    Leech Seed (7)
    Vide Whip (9)
    Razor Leaf (19*/20)
@@ -221,11 +238,21 @@ Bunnelby
 Key Moves:
    Take Down (15)
    Mud Shot (18)
-   Bulldoze (MR)
+   Bulldoze (Evo.)
    Dig (TM/37)
    Earthquake (TM/57)
    Bulk Up (TM)
    Spikes (Egg)
+
+Burmy
+Key Moves:
+   Protect (1)
+   Bug Bite (15)
+   Hidden Power (20)
+   Quiver Dance (Evo.)
+   Giga Drain (TM)
+   Metal Sound (29***)
+   Bug Buzz (50)
 
 Castform
 Key Moves:
@@ -255,6 +282,7 @@ Key Moves:
 Carvanha
 Key Moves:
    Aqua Jet (11)
+   Flip Turn (20)
    Ice Fang (25)
    Snarl (TM)
    Poison Fang (34)
@@ -286,8 +314,8 @@ Key Moves:
   Dragon Breath (16)
   Fire Fang (28)
   Flame Burst (32)
+  Air Slash (Evo.)
   Earthquake (TM)
-  Air Slash (MR)
   Shadow Claw (MR)
   Dragon Claw (MR/TM)
   Overheat (TM)
@@ -336,6 +364,7 @@ Key Moves:
 
 Chinchou
 Key Moves:
+   Bubble (1)
    Bubble Beam (20)
    Spark (23)
    Stockpile (Evo.)
@@ -365,7 +394,7 @@ Key Moves:
    Sucker Punch (MR*)
    Draining Kiss (MR**)
    Dive (26)
-   Baton Pass (29**)
+   Baton Pass (29)
    Ice Beam (TM)
    Blizzard (TM)
    Psychic (TM/34**)
@@ -377,7 +406,7 @@ Key Moves:
    Aqua Tail (39)
    Coil (45)
    Hydro Pump (50)
-   Aqua Ring (Egg)
+   Muddy Water (Egg)
 
 Clauncher
 Key Moves:
@@ -404,8 +433,8 @@ Key Moves:
    Ice Beam (TM)
    Dazzling Gleam (TM)
    Water Pulse (TM)
-   Moonlight (43*)
-   Moonblast (46*)
+   Moonblast (MR)
+   Moonlight (MR)
    Wish (Egg)
 
 Clobbopus
@@ -467,6 +496,7 @@ Key Moves:
    Zen Headbutt (43)
 
 Croagunk
+Key Moves:
    Taunt (10)
    Rock Smash (HM)
    Thief (TM)
@@ -482,9 +512,8 @@ Cubone
 Key Moves:
    Bone Club (7)
    Bonemerang (21)
+   Shadow Bone (Evo.**)
    Earthquake (TM)
-   Shadow Bone (MR**)
-   Overheat (TM**)
    Flare Blitz (53**)
    Iron Head (Egg)
 
@@ -539,6 +568,7 @@ Key Moves:
    Reversal (Egg)
 
 Dratini
+Key Moves:
    Dragon Breath (15)
    Flamethrower (TM)
    Ice Beam (TM)
@@ -561,6 +591,7 @@ Drifloon
 Key Moves:
    Gust (8)
    Ominous Wind (20)
+   Strength Sap (MR)
    Thunderbolt (TM)
    Shadow Ball (TM/40)
    Fly (HM)
@@ -580,6 +611,7 @@ Key Moves:
 Eevee
 Key Moves:
    Tail Whip (1)
+   Helping Hand (1)
    Baby-Doll Eyes (9)
    Quick Attack (13)
    Bite (17)
@@ -608,11 +640,13 @@ Key Moves:
    Black: Moonlight (33)
    Black: Mean Look (37)
    Green: Razor Leaf (Evo.)
+   Green: Leech Seed (MR)
    Green: Swords Dance (29)
    Green: X-Scissor (TM)
    Green: Giga Drain (MR)
    Green: Leaf Blade (45)
    LightBlue: Ice Beam (TM)
+   LightBlue: Freeze Dry (40)
    LightBlue: Water Pulse (TM)
    Pink: Draining Kiss (MR)
    Pink: Moonblast (37)
@@ -630,6 +664,7 @@ Key Moves:
    Fire Fang (MR)
    Thunder Fang (MR)
    Acid Spray (32)
+   Leech Life (33)
    Coil (56)
    Gunk Shot (MR!)
    Poison Fang (Egg)
@@ -684,7 +719,7 @@ Key Moves:
    Fake Out (19)
    Psyshock (25)
    Charm (28*)
-   Mean Look (MR*)
+   Moonblast (MR)
    Charge Beam (28**)
    Shadow Ball (31**/TM)
    Signal Beam (45**)
@@ -696,6 +731,7 @@ Key Moves:
 Exeggcute
 Key Moves:
    Leech Seed (11)
+   Mega Drain (15)
    Bullet Seed (TM)
    Trick Room (TM)
    Psychic (TM)
@@ -764,6 +800,7 @@ Key Moves:
 Fletchling
 Key Moves:
    Peck (10)
+   Flame Charge (Evo.)
    Steel Wing (TM/MR!)
    Taunt (TM)
    Aerial Ace (TM)
@@ -771,7 +808,6 @@ Key Moves:
    Hone Claws (TM)
    Flare Blitz (MR)
    Fly (HM)
-   Flame Charge (39)
    Acrobatics (44)
    Bulk Up (TM)
    Brave Bird (MR!)
@@ -831,8 +867,7 @@ Key Moves:
    Night Shade (15)
    Taunt (TM)
    Sucker Punch (22)
-   Shadow Ball (29)
-   Shadow Punch (Evo.)
+   Shadow Ball (Evo.)
    Dazzling Gleam (TM)
    Thunderbolt (TM)
    Sludge Bomb (TM)
@@ -882,6 +917,7 @@ Key Moves:
    Sky Uppercut (55)
 
 Golett
+Key Moves:
    Shadow Punch (13)
    Stomping Tantrum (21)
    Heavy Slam (Evo.)
@@ -895,8 +931,9 @@ Goomy
 Key Moves:
    Protect (9)
    Dragon Breath (18)
+   Water Pulse (25)
    Rain Dance (25)
-   Water Pulse (25*/TM)
+   Acid Spray (Evo./MR**)
    Thunderbolt (TM)
    Ice Beam (TM)
    Earthquake (TM)
@@ -912,12 +949,14 @@ Key Moves:
    Rapid Spin (4)
    Razor Leaf (12)
    Leaf Tornado (23)
+   Synthesis (Evo.)
    Giga Drain (TM)
    Light Screen (TM)
    Leaf Storm (46)
    Growth (Egg)
 
 Gothita
+Key Moves:
    Confusion (3)
    Psybeam (16)
    Trick Room (TM)
@@ -958,6 +997,7 @@ Key Moves:
    Snarl (TM)
    Dig (TM)
    Flamethrower (TM)
+   Play Rough (MR)
    Thunder Fang (MR)
    Overheat (TM)
    Morning Sun (Egg)
@@ -976,7 +1016,7 @@ Happiny
 Key Moves:
    Charm (1)
    Double Edge (MR/MT)
-   Heal Bell (Egg)
+   Seismic Toss (Egg)
 
 Hatenna
 Key Moves:
@@ -1008,9 +1048,12 @@ Helioptile
 Key Moves:
    Mud Slap (13)
    Parabolic Charge (25)
+   Breaking Swipe (30)
    Thunderbolt (TM)
    Thunder (TM)
    Eerie Impulse (MR)
+   Thunderbolt (MR)
+   Volt Switch (MR)
    Surf (HM)
    Camouflage (Egg)
 
@@ -1034,8 +1077,8 @@ Key Moves:
    Shadow Sneak (20)
    Aerial Ace (22)
    Slash (29)
+   Kings Shield (Evo.)
    Iron Head (MR)
-   Kings Shield (MR)
    Sacred Sword (MR)
    Night Slash (MR)
    Shadow Ball (TM)
@@ -1058,6 +1101,7 @@ Houndour
 Key Moves:
    Ember (1)
    Bite (16)
+   Incinerate (20)
    Snarl (TM)
    Flamethrower (TM/50)
    Nasty Plot (MR)   
@@ -1153,7 +1197,24 @@ Key Moves:
    Fiery Dance (MR!)
    Morning Sun (Egg)
 
+Larvitar
+Key Moves:
+   Bite (1)
+   Rock Throw (3)
+   Screech (10)
+   Rock Slide (19)
+   Fire Fang (MR)
+   Ice Fang (MR)
+   Thunder Fang (MR)
+   Earthquake (TM/54)
+   Snarl (TM)
+   Crunch (47)
+   Hone Claws (TM*)
+   Stone Edge (MR!)
+   Outrage (Egg)
+
 Lillipup
+Key Moves:
    Bite (8)
    Take Down (15)
    Work Up (20)
@@ -1210,10 +1271,11 @@ Key Moves:
    Fake Out (16)
    Bullet Seed (TM)
    Bubblebeam (24)
+   Leech Seed (30)
    Surf (HM)
    Giga Drain (TM)
    Ice Beam (TM)
-   Leech Seed (Egg)
+   Teeter Dance (Egg)
 
 Inkay
 Key Moves:
@@ -1351,6 +1413,7 @@ Key Moves:
    Zen Headbutt (29)
    Brick Break (TM)
    Earthquake (TM)
+   High Horsepower (55)
    Heart Stamp (Egg)
 
 Mime Jr
@@ -1418,6 +1481,8 @@ Key Moves:
 Mudkip
 Key Moves:
    Water Gun (4)
+   Mud Shot (Evo.)
+   Water Pulse (18/TM)
    Mud Bomb (22)
    Rock Slide (28)
    Protect (32)
@@ -1447,6 +1512,7 @@ Key Moves:
    Screech (Evo.)
    Aerial Ace (TM) 
    Bug Bite (MR*)
+   Dig (MR/TM)
    Baton Pass (35*)
    Swords Dance (41*)
    X-Scissor (47*/TM)
@@ -1458,13 +1524,14 @@ Key Moves:
    Screech (1)
    Wing Attack (16)
    Air Cutter (23)
+   Leech Life (24)
    Roost (27)
+   Dragon Pulse (Evo.)
    Hone Claws (TM)
    X-Scissor (TM)
    Moonlight (MR)
    Tailwind (35)
    Hurricane (MR!)
-   Dragon Pulse (MR!)
    Outrage (Egg)
 
 Nosepass
@@ -1484,6 +1551,7 @@ Key Moves:
 Numel
 Key Moves:
    Magnitude (12)
+   Incinerate (15)
    Lava Plume (22)
    Curse (29)
    Overheat (TM)
@@ -1492,10 +1560,26 @@ Key Moves:
    Eruption (52)
    Heavy Slam (Egg)
 
+Nymble
+Key Moves:
+   Struggle Bug (4)
+   Assurance (9)
+   Screech (14)
+   Bug Bite (22)
+   Lunge (Evo.)
+   X Scissor (TM)
+   Detect (MR)
+   Sucker Punch (40)
+   First Impression (44)
+   Axe Kick (53)
+   Skitter Smack (Egg)
+
 Oddish
 Key Moves:
    Growth (1)
    Mega Drain (19)
+   Moonblast (MR)
+   Moonlight (MR)
    Dazzling Gleam (TM)
    Sludge Bomb (TM)
    Giga Drain (34*/TM)
@@ -1506,6 +1590,7 @@ Onix
 Key Moves:
    Rock Tomb (10)
    Stealth Rock (16)
+   Breaking Swipe (22)
    Ice Fang (MR)
    Fire Fang (MR)
    Thunder Fang (MR)
@@ -1541,22 +1626,35 @@ Key Moves:
    Bite (19)
    Flame Burst (22)
    Fling (28)
-   Acrobatics (31)
+   Acrobatics (Evo.)
    Brick Break (TM)
    Flamethrower (TM)
    Overheat (TM)
    Heat Wave (Egg)
 
+Paras
+Key Moves:
+   Absorb (11)
+   Bullet Seed (TM)
+   Fury Cutter (17)
+   Spore (22)
+   X Scissor (TM)
+   Cross Poison (MR)
+   Growth (37)
+   Giga Drain (44/TM)
+   Leech Seed (Egg)
+
 Phanpy
 Key Moves:
-   Bulldoze (MR)
+   Bulldoze (15)
    Knock Off (MR)
    Rapid Spin (MR)
    Earthquake (43/TM)
-   High Horsepower (Egg)
+   Ice Shard (Egg)
 
 Phantump
 Key Moves:
+   Branch Poke (4)
    Growth (8)
    Bullet Seed (TM)
    Thief (TM)
@@ -1571,6 +1669,7 @@ Pichu
 Key Moves:
    Charm (5)
    Nasty Plot (13)
+   Thunder Punch (Evo.*)
    Thunderbolt (MR/TM)
    Psychic (TM/MR)
    Fake Out (Egg)
@@ -1580,7 +1679,8 @@ Key Moves:
    Pluck (15)
    Bullet Seed (TM)
    Steel Wing (TM)
-   Beak Blast (28)
+   Beak Blast (Evo.)
+   Screech (Evo.)
    Rock Blast (MR)
    Screech (30)
    Aerial Ace (TM)
@@ -1600,11 +1700,27 @@ Key Moves:
    Drill Peck (52)
    Icy Wind (Egg)
 
+Plusle and Minun
+Key Moves:
+   Thunder Wave (1)
+   Helping Hand (4)
+   Spark (7)
+   Encore (10)
+   Electro Ball (19)
+   Charm (25+)
+   Fake Tears (25-)
+   Thunderbolt (TM)
+   Discharge (31)
+   Nuzzle (MR)
+   Wish (Egg+)
+   Tearful Look (Egg-)
+
 Poliwag
 Key Moves:
    Water Sport (1)
    Bubble (11)
    Rain Dance (18)
+   Mud Shot (Evo.)
    Dynamic Punch (32*)  
    Brick Break (TM*)
    Bulk Up (TM*)
@@ -1619,6 +1735,7 @@ Key Moves:
    Flame Wheel (13)
    Stomp (17)
    Flame Charge (21)
+   Smart Strike (Evo.)
    Flamethrower (TM)
    Overheat (TM)
    Megahorn (MR*)
@@ -1657,7 +1774,6 @@ Key Moves:
    Psybeam (7)
    Recover (18)
    Ice Beam (TM)
-   Zap Cannon (MR*)
    Discharge (40)
    Tri-Attack (50)
    Nasty Plot (MR)
@@ -1673,10 +1789,11 @@ Key Moves:
    Hyper Beam (TM)
    Moonblast (MR!)
    Psycho Cut (31**)
-   Bulk Up (TM**)
-   Close Combat (53**)
+   Aqua Cutter (MR**)
    Leaf Blade (MR**)
    Night Slash (MR**)
+   Bulk Up (TM**)
+   Close Combat (53**)
    Shadow Sneak (Egg)
 
 Remoraid
@@ -1707,6 +1824,7 @@ Key Moves:
    Earthquake (TM)
    Iron Tail (TM)
    Calm Mind (42/TM)
+   Meteor Mash (48)
    Dragon Pulse (MR!)
    Meteor Mash (Egg)
 
@@ -1741,7 +1859,7 @@ Key Moves:
    Incinerate (27)
    Rock Tomb (TM)
    Overheat (TM)
-   Stealth Rock (37)
+   Stealth Rock (Evo.)
    Heat Crash (45)
    Mud Slap (Egg)
 
@@ -1807,6 +1925,7 @@ Key Moves:
    Taunt (TM)
    Flame Burst (24)
    Toxic (29)
+   Incinerate (30)
    Captivate (Evo.)
    Sludge Bomb (TM)
    Flamethrower (44/TM)
@@ -1821,6 +1940,7 @@ Key Moves:
    Crunch (28)
    Snarl (TM)
    Dig (32/TM)
+   Breaking Swipe (Evo.)
    Bulk Up (TM)
    Earthquake (54/TM)
    Outrage (MR!)
@@ -1863,14 +1983,16 @@ Key Moves:
 Scyther
 Key Moves:
    Steel Wing (TM)
+   Rock Smash (HM)
    Wing Attack (21)
    Fury Cutter (25)
+   Bullet Punch (Evo.*)
+   Stone Axe (Evo.**)
    X-Scissor (TM/41)
+   Night Slash (45)
+   Iron Head (50**)
    Swords Dance (57)
    Brick Break (TM)
-   Stone Axe (Evo.*)
-   Night Slash (45**)
-   Iron Head (50**)
    Bug Buzz (Egg)
 
 Sewaddle
@@ -1879,6 +2001,7 @@ Key Moves:
    Razor Leaf (15)
    Struggle Bug (22)
    Protect (Evo.)
+   Struggle Bug (Evo.)
    X-Scissor (TM/39)
    Aerial Ace (TM)
    Steel Wing (TM)
@@ -1892,6 +2015,7 @@ Key Moves:
    Icicle Spear (13)
    Protect (16)
    Ice Beam (TM)
+   Razor Shell (MR)
    Shell Smash (MR)
    Surf (HM)
    Icicle Crash (50)
@@ -1902,10 +2026,25 @@ Key Moves:
    Spark (13)
    Thief (TM)
    Snarl (TM)
+   Volt Switch (30)
    Thunder Fang (35)
    Facade (TM)
    Crunch (42)
    Ice Fang (Egg)
+
+Shroodle
+Key Moves:
+   Acid Spray (5)
+   Poison Fang (14)
+   Taunt (TM)
+   Slash (21)
+   U Turn (25)
+   Doodle (Evo.)
+   Poison Jab (Evo.)
+   Dig (TM)
+   Knock Off (45)
+   Gunk Shot (51)
+   Parting Shot (Egg)
 
 Shroomish
 Key Moves:
@@ -1964,9 +2103,11 @@ Key Moves:
    Yawn (9)
    Confusion (12)
    Zen Headbutt (24)   
-   Eerie Spell (29*)
-   Power Gem (MR)
-   Surf (HM)
+   Shell Side Arm (Evo.*)
+   Eerie Spell (Evo.**)
+   Power Gem (MR**)
+   Chilly Reception (MR**)
+   Surf (30/HM)
    Slack Off (33)
    Psychic (36/TM)
    Sludge Bomb (TM)
@@ -2053,7 +2194,7 @@ Key Moves:
    Psychic (TM)
    Ice Beam (TM)
    Draining Kiss (MR)
-   Perish Song (MR/55)
+   Perish Song (55)
    Calm Mind (TM)
    Fake Out (Egg)
 
@@ -2074,9 +2215,11 @@ Key Moves:
    Leaf Tornado (16)
    Leech Seed (20)
    Mega Drain (24)
+   Iron Tail (TM)
+   Protect (TM)
    Leaf Blade (32)
    Coil (36)
-   Giga Drain (44)
+   Giga Drain (44/TM)
    Leaf Storm (MR!)
    Glare (Egg)
 
@@ -2097,11 +2240,12 @@ Snover
 Key Moves:
    Razor Leaf (5)
    Icy Wind (9)
-   Ice Punch (MR)
+   Ice Punch (Evo.)
    Giga Drain (TM)
    Earthquake (TM)
+   Leech Seed (35)
    Blizzard (47/TM)
-   Leech Seed (Egg)
+   Avalanche (Egg)
 
 Snubbull
 Key Moves:
@@ -2236,9 +2380,10 @@ Key Moves:
    Stomp (13)
    Take Down (21)
    Calm Mind (27)
-   Psyshield Bash (TM)
+   Psyshield Bash (Evo.)
    Psychic (TM)
    Zen Headbutt (37)
+   Jump Kick (43)
    Megahorn (MR!)
    Double Kick (Egg)
 
@@ -2263,7 +2408,7 @@ Key Moves:
    Ice Beam (TM)
    Earthquake (TM)
    Surf (HM)
-   Flash Cannon (MR)
+   Flash Cannon (Evo.)
    Aura Sphere (Egg)
 
 Staryu
@@ -2357,11 +2502,12 @@ Key Moves:
 Teddiursa
 Key Moves:
    Fury Swipes (8)
+   Slash (29)
+   Play Rough (29)
    Bulk Up (TM)
    Facade (TM)
    Earthquake (TM)
    Headlong Rush (Evo.)
-   Play Rough (MR)
    Crunch (Egg)
 
 Tentacool
@@ -2456,6 +2602,7 @@ Totodile
 Key Moves:
    Water Gun (6)
    Ice Fang (21)
+   Breaking Swipe (26)
    Crunch (30)
    Dragon Claw (TM)
    Earthquake (TM)
@@ -2484,6 +2631,7 @@ Key Moves:
 Treecko
 Key Moves:
    Mega Drain (13)
+   Leech Seed (15)
    Giga Drain (21*/TM)
    Leaf Blade (23)
    Hone Claws (TM)
@@ -2492,7 +2640,7 @@ Key Moves:
    X-Scissor (45/TM)
    Leaf Storm (MR!)
    Screech (MR!)
-   Leech Seed (Egg)
+   Grass Whistle (Egg)
 
 Trubbish
 Key Moves:
@@ -2526,6 +2674,20 @@ Key Moves:
    Overheat (49/TM)
    Fire Spin (Egg)
 
+Tympole
+Key Moves:
+   Bubble Beam (12)
+   Mud Shot (16)
+   Muddy Water (28)
+   Earthquake (TM)
+   Ice Beam (TM)
+   Sludge Bomb (TM)
+   Surf (HM)
+   Waterfall (HM)
+   Drain Punch (44)
+   Hydro Pump (53)
+   Earth Power (Egg)
+
 Tynamo
 Key Moves:
    Spark (1)
@@ -2548,14 +2710,17 @@ Key Moves:
    High Jump Kick (29*)
    Brick Break (MR*)
    Blaze Kick (45*)
+   Drain Punch (Evo.**)
    Vacuum Wave (26**)
    Rolling Kick (20***)
+   Dig (32/TM***)
    Bulk Up (TM)
    Close Combat (57/MR!/55)
    Bullet Punch (Egg)
 
 Tyrunt
 Key Moves:
+   Rock Throw (8)
    Stealth Rock (15)
    Bite (17)
    Charm (20)
@@ -2564,6 +2729,7 @@ Key Moves:
    Rock Tomb (TM)
    Dragon Claw (37/TM)
    Rock Slide (Evo.)
+   Breaking Swipe (MR)
    Earthquake (47/TM)
    Head Smash (58)
    Fire Fang (Egg)
@@ -2600,6 +2766,7 @@ Key Moves:
    Fury Cutter (MT)
    X-Scissor (TM)
    Earthquake (TM)
+   Mortal Spin (MR)
    Megahorn (MR!)
    Toxic Spikes (Egg)
 
@@ -2621,14 +2788,14 @@ Key Moves:
    Ice Beam (TM/MR)
    Blizzard (TM)
    Calm Mind (TM)
-   Freeze Dry (Egg)
+   Freeze Dry (Egg/MR)
 
 Wattrel
 Key Moves:
    Thunder Shock (4)
    Pluck (11)
    Roost (23)
-   Dual Wingbeat (30)
+   Dual Wingbeat (Evo.)
    Thunderbolt (TM)
    Thunder (TM)
    Shock Wave (TM)
@@ -2732,6 +2899,7 @@ Key Moves:
 
 Yanma
 Key Moves:
+   Air Cutter (14)
    Sonicboom (14)
    Ancient Power (33)
    Giga Drain (TM)
