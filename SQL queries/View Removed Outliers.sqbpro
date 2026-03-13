@@ -51,7 +51,7 @@ WITH ranked AS (
     FROM draft_pokemon_v2
 ),
 iqr_calc AS (
-    SELECT
+    SELECt
         pokemon,
         MAX(CASE WHEN rn = CAST(cnt * 0.25 AS INT) THEN cost END) AS q1,
         MAX(CASE WHEN rn = CAST(cnt * 0.75 AS INT) THEN cost END) AS q3
@@ -79,7 +79,16 @@ SELECT
     END AS status
 FROM draft_pokemon_v2 d
 JOIN bounds b ON d.pokemon = b.pokemon
-WHERE d.pokemon like '%car%'
-ORDER BY d.cost;
+WHERE d.pokemon like '%Archen%'
+ORDER BY d.cost DESC;
+
+Select * from draft_pokemon_v2 where drafted_by = 'Mfrazz'
 
-Select * from draft_pokemon_v2 where drafted_by = 'Mfrazz'</sql><current_tab id="0"/></tab_sql></sqlb_project>
+select pokemon, avg(cost), count(*) as times_drafted from draft_pokemon_v2
+
+group by pokemon order by count(*)
+
+select count(*), drafted_by, draft_id from draft_pokemon_v2 group by drafted_by, draft_id order by count(*) desc
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
