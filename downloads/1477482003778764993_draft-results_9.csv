@@ -1,0 +1,44 @@
+Draft ID: 393639361249
+Patch: v8.2
+Date: 2/28/2026, 7:45:27 PM
+Total Pokemon Sold: 32
+
+Player,Starting Money,Remaining Money
+DuskMender,4000,-12000
+LordransBlight,0,-20000
+PointlessVenture,0,-20000
+Veetor,200,-19600
+
+Order,Pokemon,Drafted By,Cost
+1,Absol,LordransBlight,2000
+2,Applin,DuskMender,2600
+3,Blipbug,DuskMender,1000
+4,Bombirdier,LordransBlight,2700
+5,Buneary,LordransBlight,1700
+6,Cacnea,LordransBlight,2600
+7,Chewtle,PointlessVenture,4500
+8,Chinchou,Veetor,3000
+9,Fennekin,Veetor,2600
+10,Flabebe,PointlessVenture,1000
+11,Morelull,PointlessVenture,1000
+12,Rookidee,Veetor,2800
+13,Rotom,PointlessVenture,4200
+14,Skrelp,DuskMender,1500
+15,Slakoth,Veetor,3000
+16,Smoliv,PointlessVenture,1600
+17,Smeargle,LordransBlight,1000
+18,Spoink,DuskMender,1000
+19,Surskit,DuskMender,1100
+20,Swinub,DuskMender,2400
+21,Teddiursa,Veetor,2500
+22,Tinkatink,DuskMender,2600
+23,Tirtouga,PointlessVenture,2000
+24,Turtwig,LordransBlight,6500
+25,Tympole,Veetor,4600
+26,Tyrunt,Veetor,1300
+27,Venipede,PointlessVenture,1500
+28,Wattrel,PointlessVenture,4200
+29,Wingull,DuskMender,2800
+30,Wishiwashi,LordransBlight,1100
+31,Wooper,LordransBlight,2400
+32,Yamper,DuskMender,1000

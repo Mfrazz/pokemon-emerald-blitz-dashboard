@@ -1,0 +1,53 @@
+Draft ID: 643142281728
+Patch: v8.3
+Date: 3/11/2026, 6:30:06 PM
+Total Pokemon Sold: 40
+
+Player,Starting Money,Remaining Money
+Beastly,20000,0
+certified,20000,0
+Jeans,20000,0
+KCH42,20000,1200
+MountainDrew,20000,1700
+
+Order,Pokemon,Drafted By,Cost
+1,Zigzagoon,KCH42,4900
+2,Greavard,Jeans,1900
+3,Minior,MountainDrew,2900
+4,Vulpix,Beastly,3000
+5,Turtwig,Beastly,3600
+6,Elgyem,KCH42,1400
+7,Castform,Beastly,4300
+8,Piplup,Jeans,4100
+9,Elekid,MountainDrew,2700
+10,Nosepass,certified,2600
+11,Shellder,MountainDrew,1400
+12,Cubone,Jeans,1400
+13,Varoom,KCH42,3200
+14,Chespin,Jeans,3200
+15,Tynamo,Jeans,1300
+16,Oddish,MountainDrew,2900
+17,Tentacool,certified,2500
+18,Scatterbug,KCH42,2200
+19,Trubbish,Jeans,1100
+20,Drilbur,MountainDrew,3600
+21,Wailmer,KCH42,2000
+22,Zorua,certified,2300
+23,Fidough,Beastly,2500
+24,Larvitar,Jeans,1800
+25,Ponyta,Jeans,2700
+26,Burmy,certified,1500
+27,Buizel,certified,1500
+28,Gothita,certified,1500
+29,Exeggcute,Jeans,2500
+30,Sandile,Beastly,2600
+31,Sandygast,certified,1800
+32,Shuppet,MountainDrew,700
+33,Clamperl,KCH42,1500
+34,Snover,certified,1500
+35,Fuecoco,MountainDrew,4100
+36,Remoraid,KCH42,1800
+37,Rookidee,KCH42,1800
+38,Croagunk,certified,4800
+39,Noibat,Beastly,2000
+40,Rowlet,Beastly,2000

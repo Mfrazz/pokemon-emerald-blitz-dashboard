@@ -1,0 +1,80 @@
+Draft ID: 174781695305
+Patch: v8.2
+Date: 27.2.2026, 23:23:41
+Total Pokemon Sold: 64
+
+Player,Starting Money,Remaining Money
+cheapd,20000,0
+freez,20000,0
+KCH42,20000,0
+livii,20000,0
+MountainDrew,20000,500
+Pratt,20000,800
+salmon,20000,0
+Ven,20000,0
+
+Order,Pokemon,Drafted By,Cost
+1,Nincada,Ven,1400
+2,Slakoth,Ven,1700
+3,Mudbray,livii,4100
+4,Houndour,MountainDrew,2500
+5,Swirlix,KCH42,2200
+6,Corsola,livii,2100
+7,Staryu,MountainDrew,2900
+8,Honedge,MountainDrew,4600
+9,Miltank,salmon,2800
+10,Minccino,livii,1100
+11,Bulbasaur,Pratt,3500
+12,Magnemite,KCH42,4100
+13,Venipede,MountainDrew,1600
+14,Voltorb,livii,3000
+15,Lotad,KCH42,2800
+16,Roggenrola,livii,1600
+17,Tirtouga,Pratt,2500
+18,Burmy,Pratt,1400
+19,Minior,livii,2600
+20,Wishiwashi,Ven,2700
+21,Turtonator,KCH42,2500
+22,Teddiursa,Ven,3100
+23,Emolga,salmon,2900
+24,Sandile,livii,5500
+25,Slowpoke,Ven,2500
+26,Zorua,freez,1800
+27,Larvitar,freez,2400
+28,Aron,cheapd,2700
+29,Swinub,MountainDrew,2700
+30,Inkay,KCH42,2500
+31,Gible,Pratt,4000
+32,Sneasel,salmon,2400
+33,Hatenna,salmon,1800
+34,Snivy,Ven,3300
+35,Spritzee,Ven,3000
+36,Cubone,KCH42,1400
+37,Machop,freez,2000
+38,Fennekin,freez,3900
+39,Smoliv,cheapd,1200
+40,Hawlucha,cheapd,3400
+41,Meowth,Pratt,1500
+42,Sandygast,salmon,1700
+43,Smeargle,salmon,600
+44,Drifloon,cheapd,1700
+45,Clauncher,freez,2900
+46,Nymble,salmon,2500
+47,Chimchar,Pratt,4100
+48,Skiddo,salmon,3100
+49,Trapinch,cheapd,2100
+50,Squirtle,cheapd,2800
+51,Plusle and Minun,cheapd,3100
+52,Popplio,freez,3400
+53,Morelull,freez,1900
+54,Zigzagoon,KCH42,3000
+55,Ponyta,salmon,2200
+56,Clamperl,MountainDrew,900
+57,Pancham,MountainDrew,2500
+58,Stonjourner,MountainDrew,1800
+59,Tentacool,freez,1700
+60,Fuecoco,cheapd,3000
+61,Gastly,Ven,2300
+62,Shroomish,Pratt,1600
+63,Charmander,KCH42,1500
+64,Cufant,Pratt,600

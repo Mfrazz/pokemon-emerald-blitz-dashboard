@@ -1,0 +1,80 @@
+Draft ID: 300669093531
+Patch: v8.3
+Date: 3/17/2026, 11:02:10 PM
+Total Pokemon Sold: 64
+
+Player,Starting Money,Remaining Money
+Beastly,20000,0
+Certified,20000,0
+Jason,20000,1400
+Jeans,20000,0
+Johan,20000,0
+KCH42,20000,0
+Pratt,20000,1100
+thegoodkid,20000,0
+
+Order,Pokemon,Drafted By,Cost
+1,Torchic,Jeans,3400
+2,Drilbur,Jason,4000
+3,Gible,Certified,5000
+4,Minccino,KCH42,1900
+5,Cacnea,Jeans,2200
+6,Egg,thegoodkid,3200
+7,Tentacool,Johan,2700
+8,Cutiefly,Jeans,3000
+9,Flabebe,Pratt,2800
+10,Stantler,Johan,2200
+11,Shroomish,Beastly,3600
+12,Grubbin,Certified,1900
+13,Drifloon,Jeans,2000
+14,Bounsweet,KCH42,2600
+15,Gossifleur,Johan,2100
+16,Wailmer,KCH42,3000
+17,Pichu,Beastly,2900
+18,Mankey,Johan,3000
+19,Murkrow,Johan,2000
+20,Mawile,Jeans,2800
+21,Varoom,Pratt,3400
+22,Farfetch'd-Galar,thegoodkid,3300
+23,Nymble,thegoodkid,2500
+24,Nincada,Beastly,1500
+25,Archen,thegoodkid,5100
+26,Zigzagoon,KCH42,5000
+27,Sandshrew,thegoodkid,2800
+28,Pikipek,Certified,2700
+29,Charcadet,Pratt,4000
+30,Spritzee,KCH42,4000
+31,Pancham,Jeans,1600
+32,Fennekin,Jason,3500
+33,Remoraid,Certified,2300
+34,Misdreavus,Pratt,2600
+35,Sableye,Certified,1700
+36,Snover,thegoodkid,1500
+37,Mime Jr,Beastly,2000
+38,Rolycoly,Certified,1900
+39,Chingling,Jason,1500
+40,Ekans,Jeans,1600
+41,Cottonee,Pratt,2600
+42,Charmander,Beastly,2900
+43,Chespin,Jason,2000
+44,Salandit,KCH42,1500
+45,Popplio,Jeans,3400
+46,Voltorb,Johan,1700
+47,Yanma,Jason,1700
+48,Mareep,Beastly,1200
+49,Skrelp,Pratt,1200
+50,Spoink,Certified,1500
+51,Wingull,Johan,3000
+52,Mudkip,Beastly,4800
+53,Purrloin,Jason,1200
+54,Phantump,thegoodkid,1600
+55,Carvanha,Pratt,1200
+56,Shellder,Beastly,1100
+57,Blipbug,KCH42,900
+58,Timburr,Certified,3000
+59,Nosepass,Jason,2200
+60,Venipede,KCH42,1100
+61,Noibat,Pratt,1100
+62,Makuhita,Johan,900
+63,Aron,Jason,2500
+64,Totodile,Johan,2400
